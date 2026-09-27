@@ -4,11 +4,49 @@
   "destination": {
     "phase": "Phase 1",
     "title": "Foundations",
-    "why": "A simple framework for growing as an engineer. A handful of capabilities, each climbed one rung at a time. A rung is finished when you can show it, not when you've read about it."
+    "why": "A simple framework for growing as an engineer. A handful of capabilities, each climbed one rung at a time. A rung is finished when you can show it, not when you've read about it.",
+    "throughout": [
+      {
+        "title": "Build and test setup",
+        "note": "Acquired by needing it.",
+        "items": [
+          "CMake, multi-target",
+          "Catch2 or doctest",
+          "Google Benchmark",
+          "AddressSanitizer and UndefinedBehaviorSanitizer on every build",
+          "ThreadSanitizer in CI from the day a thread exists",
+          "gdb and lldb, including reading core dumps",
+          "CI on every push",
+          "Compiler Explorer, opened as a reflex"
+        ]
+      },
+      {
+        "title": "Measurement",
+        "items": [
+          "Predict the cost before measuring it",
+          "One variable per benchmark",
+          "DoNotOptimize and ClobberMemory, so the compiler cannot elide the work",
+          "Never a speedup without a variance figure, and never a mean alone",
+          "Microbenchmarks built per project, against that project's own seams"
+        ]
+      },
+      {
+        "title": "Problem practice",
+        "items": [
+          "One problem a day into the solve log, half a page of notes per non-trivial one",
+          "Thirty minutes minimum before opening an editorial; read only enough to unblock, then finish it yourself",
+          "Every non-trivial algorithm stress-tested against a slow brute force with a random input generator",
+          "The STL when the clock is running; your own implementations only to understand them",
+          "Every dynamic programming recurrence written as one mathematical line before any code",
+          "Every two weeks: four problems from a past Div 3 round, two hours, no aids"
+        ]
+      }
+    ]
   },
   "reading": [
-    "The live step is the lowest one whose finish line isn't met yet.",
-    "Capabilities are in priority order. When two compete for a slot, the higher one wins."
+    "The live step is the lowest one whose finish line isn't met yet. All seven capabilities have one at once.",
+    "When capabilities compete for a slot: algorithms first, then C++, then the pricer, then performance, then concurrency, then design and systems together.",
+    "The first five decide whether the work holds up. Design and systems make it better once it does."
   ],
   "protocol": {
     "day": [
@@ -27,8 +65,8 @@
             "note": "If a weekday block goes flat: the next chapter of Kernighan & Pike, with notes."
           },
           "Train: {training}. Then ten minutes of mobility.",
-          "Zetamac.",
-          "One LeetCode problem into the solve log.",
+          "Zetamac, two minutes, floor of 50.",
+          "One problem into the solve log, half a page of notes if it was non-trivial.",
           "Money Stuff, and a little news.",
           "Eat in a calorie deficit."
         ]
@@ -113,72 +151,199 @@
       "No replanning. Setting what this week should prove is fine; rebuilding the roadmap isn't."
     ]
   },
+  "works": {
+    "about": "Each piece is a small tool plus a writeup: one sharp finding, and one named regime where the finding does not apply. One every six to eight weeks. The next one is whichever the live work has made cheapest.",
+    "shipped": [
+      {
+        "name": "mc754",
+        "what": "Where Monte Carlo diverges from the analytic limit because of float arithmetic rather than sample variance, and where Kahan summation pays for itself."
+      },
+      {
+        "name": "atomic-probe",
+        "what": "Which std::atomic operations actually compile to lock-free instructions, and the roughly 40× cost of the silent-lock path under contention."
+      },
+      {
+        "name": "detreduce",
+        "what": "A reduction that gives bit-identical results regardless of thread count, topology or scheduling, and where that is required versus superstition."
+      },
+      {
+        "name": "linecache",
+        "what": "Cross-architecture cache-line detection; 64-byte alignment is silently wrong on Apple Silicon, where L1 lines are 128 bytes."
+      },
+      {
+        "name": "cholupd",
+        "what": "A streaming covariance estimator with an incrementally updated Cholesky factor, and the regimes where rounding breaks it."
+      }
+    ],
+    "queue": [
+      {
+        "name": "mc754-paths",
+        "what": "How rounding accumulates along a simulated path, and what it does to a path-dependent price.",
+        "rides": "Floating point line and pricer step 1",
+        "size": "about a fortnight"
+      },
+      {
+        "name": "isbetray",
+        "what": "When importance sampling increases variance instead of reducing it, and the condition that predicts it.",
+        "rides": "Pricer step 4",
+        "size": "about a weekend"
+      },
+      {
+        "name": "vectranscend",
+        "what": "Vectorised exp and log in the per-path loop, accuracy against throughput.",
+        "rides": "Performance rung 4",
+        "size": "about a weekend"
+      },
+      {
+        "name": "linecache-false",
+        "what": "Detecting false sharing from performance counters rather than inspection.",
+        "rides": "Concurrency rung 4",
+        "size": "about a fortnight"
+      }
+    ]
+  },
   "capabilities": [
     {
       "id": "algorithms",
+      "code": "C1",
       "name": "Algorithms and problem-solving",
       "state": "active",
       "goal": "Solve any DSA problem correctly, optimally, and in good time.",
       "why": "Most hard problems are data-structure and algorithm problems underneath. Seeing the recurrence, the invariant and the cost quickly makes everything else faster to build and easier to trust.",
       "now": "Erickson Ch 1 exercises and Kleinberg & Tardos Ch 5 to §5.5. The thirty recurrences and the five proofs.",
+      "continuous": [
+        "Antti Laaksonen, Guide to Competitive Programming, as a companion reference"
+      ],
       "rungs": [
         {
           "title": "Analysis",
           "status": "live",
-          "what": "Recursion and divide and conquer (Erickson Ch 1, Kleinberg & Tardos Ch 1–2 and 5, MIT 6.046). Thirty recurrences by hand. Correctness and runtime proofs for binary search, mergesort, quickselect, BFS and Dijkstra. CSES Introductory.",
-          "done_when": "The recurrence and master-theorem case sketched on sight from a single editorial line, and the eighteen CSES Introductory problems logged.",
+          "because": "First, because every later rung needs you to write a bound and a correctness argument.",
+          "items": [
+            "Erickson, Algorithms, Ch 1 (recursion), paired with Kleinberg & Tardos, Algorithm Design, Ch 5 (divide and conquer)",
+            "Kleinberg & Tardos Ch 1–2: stable matching as a proof masterclass, and asymptotics",
+            "MIT 6.046: L1, L2, R1",
+            "Thirty recurrences by hand: substitution, recursion tree, master theorem",
+            "Correctness and runtime proofs for binary search, mergesort, quickselect, BFS and Dijkstra",
+            "CSES Introductory, all eighteen"
+          ],
+          "done_when": "The recurrence and master-theorem case sketched on sight from a single editorial line, and the eighteen logged.",
           "progress": "CSES Introductory is done."
         },
         {
           "title": "Containers, built from scratch",
           "status": "next",
-          "what": "byo::vector through hash_map (chaining and Robin Hood), each unit-tested, stress-tested against std:: and benchmarked. Then the classic sorts. CSES Sorting and Searching alongside.",
+          "because": "Second, because the hash map is the hardest check here and takes the longest to build. It doesn't depend on rung 3, so it shouldn't wait behind it.",
+          "items": [
+            "Each unit-tested, stress-tested against the std:: equivalent, and microbenchmarked",
+            "byo::vector (amortised O(1) push, proof written), byo::list (correct iterator invalidation), byo::deque (segmented)",
+            "byo::stack, byo::queue, byo::priority_queue, byo::bitset",
+            "byo::hash_map last: chaining and Robin Hood, against adversarial hash inputs",
+            "Then mergesort, quicksort (median of three), heapsort, introsort, radix and counting sort, benchmarked on those containers",
+            "At the hash map, not before: Knuth, TAOCP Vol 3 §6.4; Celis, Robin Hood Hashing; Abseil's Swiss Tables notes and Kulukundis's CppCon 2017 talk; benchmark against absl::flat_hash_map",
+            "Alongside: CSES Sorting and Searching, core then extended"
+          ],
           "done_when": "A hash map written from a blank file in under 30 minutes that survives 10⁷ adversarial operations."
         },
         {
           "title": "Paradigms",
           "status": "later",
-          "what": "Backtracking, greedy, dynamic programming (the largest item). A memoisation framework and a DSU with rollback. CSES DP, AtCoder Educational DP, Codeforces 1400→1900.",
-          "done_when": "A 1400 solved cold in 25 minutes three separate times, then a 1700 three times, and a 1700 classified within two minutes."
+          "because": "After rung 1, because dynamic programming is recursion plus memoisation. Rungs 3 and 4 can be taken in either order.",
+          "items": [
+            "Erickson Ch 2 backtracking, Ch 4 greedy",
+            "Erickson Ch 3 dynamic programming, with its exercises: the largest single item here",
+            "Kleinberg & Tardos Ch 4 (greedy, with the matroid framing) and Ch 6 (dynamic programming)",
+            "A memoisation framework: decorator for recursive, builder for iterative",
+            "A disjoint-set union with path compression, union by rank and rollback",
+            "CSES Dynamic Programming, core then advanced; AtCoder Educational DP, full set",
+            "Codeforces greedy tag 1400→1800, dp tag 1400→1900"
+          ],
+          "done_when": "A 1400 solved cold in 25 minutes three separate times, then a 1700 three times, and a 1700 classified within two minutes as greedy with an exchange argument, DP on subsequences, or divide and conquer on a dimension."
         },
         {
           "title": "Graphs, the basics",
           "status": "later",
-          "what": "byo::graph. BFS, iterative DFS, Dijkstra on your own heap, Bellman-Ford, topological sort, Kruskal on your own DSU, Prim. The CSES graph list.",
+          "items": [
+            "Erickson Ch 5–8: basics, DFS, minimum spanning trees, shortest paths",
+            "Kleinberg & Tardos Ch 3",
+            "byo::graph: adjacency lists, one iterator for directed and undirected",
+            "BFS, iterative DFS, Dijkstra on your own heap, Bellman-Ford, topological sort, Kruskal on your own DSU, Prim",
+            "CSES Graph Algorithms, from Counting Rooms to Cycle Finding"
+          ],
           "done_when": "Dijkstra written from a blank file in under 10 minutes."
         }
       ]
     },
     {
       "id": "cpp",
+      "code": "C2",
       "name": "C++",
       "state": "active",
-      "goal": "Real mastery of C++: know what every line does, and why.",
+      "goal": "Real mastery of C++ across its history: what C++98/03 was like, what each standard changed, and why.",
       "why": "The language everything else here is written in. Knowing exactly what each line does (copies, moves, lifetimes, what the compiler generates) is the difference between code that works and code you can reason about.",
       "now": "Starts Wednesday 30 September: Meyers, Effective Modern C++, Items 1–4, then 18–22 on Friday.",
+      "method": "Every rung is organised by topic, walked from old to new: the old-language problem, the idiom that worked around it, what the committee changed and in which standard, why, and what is still rough.",
+      "continuous": [
+        "The evolution log: one entry per feature met in rungs 1–3, with the old problem, the old idiom, what changed and when, the committee's reasoning, the proposal paper, and what is still rough. Finished when it covers every feature in rungs 1–3.",
+        "History: Stroustrup's HOPL III and HOPL IV papers, The Design and Evolution of C++, Sutter's trip reports, the proposals via wg21.link (for moves, N1377 and N2027)",
+        "Compiler Explorer as a reflex; sanitizers on every build",
+        "Carruth, Efficiency with Algorithms, Performance with Data Structures"
+      ],
       "rungs": [
         {
-          "title": "Deduction and ownership",
+          "title": "Value semantics and ownership, old to new",
           "status": "live",
-          "what": "Effective Modern C++ Items 1–4 and 18–30. Effective C++ Items 5–25. Godbolt's talk, then your own loop in Compiler Explorer on x86-64 and ARM64.",
-          "done_when": "Given any function signature, say what happens to each argument (copied, moved, elided, dangling) and why."
+          "because": "First, because the containers and the pricer's core are written against it.",
+          "items": [
+            "The old life: Meyers, Effective C++ 3rd ed, Items 5–25; Sutter, Exceptional C++, the exception-safety and class-design items (the three guarantees, copy-and-swap, Pimpl)",
+            "The change: Josuttis, C++ Move Semantics – The Complete Guide",
+            "The rules: Meyers, Effective Modern C++, Items 14 and 17–30, read after Josuttis as the checklist",
+            "Godbolt, What Has My Compiler Done for Me Lately?, then your own loop in Compiler Explorer on x86-64 and ARM64"
+          ],
+          "done_when": "Given any function signature, say what happens to each argument (copied, moved, elided, dangling) and why; and explain why auto_ptr was removed, why the rule of three became the rules of five and zero, and what C++17's guaranteed copy elision changed."
         },
         {
-          "title": "Templates and the modern language",
+          "title": "Generic code and lambdas, old to new",
           "status": "next",
-          "what": "C++ Templates: The Complete Guide Ch 1–2, 5, 8. Effective Modern C++ Items 14, 15, 17, 31–34.",
-          "done_when": "A small generic component with correct forwarding and no redundant copies, shown zero-cost in Compiler Explorer."
+          "because": "After rung 1, because templates are unreadable without value categories and forwarding.",
+          "items": [
+            "Mechanics: C++ Templates: The Complete Guide, Ch 1–2 and 5 (two-phase lookup, dependent names, typename and template disambiguators)",
+            "Deduction: Effective Modern C++, Items 1–4",
+            "The four eras of constraining a template: C++03 traits and tag dispatch, C++11 enable_if and SFINAE, C++17 if constexpr, CTAD and folds, C++20 concepts",
+            "Non-type template parameters, old to new",
+            "Lambdas across the standards: functors and bind, then C++11, 14, 17 and 20; Meyers Items 31–34"
+          ],
+          "done_when": "One generic component written three ways (C++03 traits, C++11 SFINAE, C++20 concepts), all three compiling to the same code in Compiler Explorer, and you can say what each step fixed."
+        },
+        {
+          "title": "The rest of modern C++",
+          "status": "later",
+          "because": "After rung 2, because most of it is generic code underneath.",
+          "items": [
+            "C++17 vocabulary: optional, variant, string_view, structured bindings",
+            "C++20: the spaceship operator, ranges and views, consteval and constinit (with Meyers Item 15), designated initialisers; coroutines and modules at the level of the problem each solves",
+            "Source: Josuttis's C++17 and C++20 guides"
+          ],
+          "done_when": "For each feature, state the workaround it replaced and show both in a small example."
         },
         {
           "title": "How the standard library does it",
           "status": "later",
-          "what": "libc++, one question each: vector's growth, shared_ptr's control block, function's type erasure, sort's introsort thresholds.",
+          "because": "After rung 3, because the source is template-heavy and uses the whole modern language.",
+          "items": [
+            "libc++, one question per component",
+            "vector: how growth stays exception-safe when elements move",
+            "shared_ptr: the control block, and why make_shared is one allocation",
+            "function: type erasure and the small-buffer optimisation",
+            "sort: where introsort's thresholds are, and why"
+          ],
           "done_when": "Each answer explained, with what a naive version gets wrong."
         }
       ]
     },
     {
       "id": "probability",
+      "code": "C7",
       "name": "Probability, numerics and the pricer",
       "state": "active",
       "kind": "lines",
@@ -189,174 +354,281 @@
         {
           "title": "The pricer",
           "status": "live",
-          "what": "Six steps in order: 1 validation harness, 2 naive baseline locked, 3 three seams (product, model, RNG), 4 variance reduction and quasi-Monte Carlo, 5 reverse-mode AAD, 6 desk layer.",
-          "done_when": "Three seams open; RMSE at fixed wall-clock; cost of price plus all sensitivities over cost of price alone, single digit and flat.",
+          "because": "In dependency order. The pricer ranks third of everything: every later step waits on the harness.",
+          "items": [
+            "1 Validation harness: closed-form Black–Scholes separate from the Monte Carlo path, agreement to a stated tolerance, convergence at the expected rate, a standard error on every price. Reading: the floating point line; Hull on options, binomial trees, Itô and Black–Scholes–Merton",
+            "2 Naive baseline, tagged and locked, with machine, flags and turbo state recorded",
+            "3 Three independent seams: product, model, RNG. Reading: Joshi Ch 1–9; take the decomposition, use templates where he uses inheritance",
+            "4 Variance reduction and quasi-Monte Carlo (Sobol with Brownian bridge). Reading: Glasserman Ch 1–2, 4–5; derive the control-variate coefficient, the antithetic condition, and why Sobol only wins at low effective dimension",
+            "5 Reverse-mode AAD: price and full sensitivities in one pass. Reading: Savine; derive pathwise delta and the likelihood-ratio estimator",
+            "6 Desk layer: implied vol solver, curve bootstrapped from instruments, surface fitted to quotes",
+            "Design commitments from the first line: core templated on scalar type; exactly one type-erased boundary, at the factory rim; the per-path loop fully static and inlined; a new product is one new file with zero core edits"
+          ],
+          "done_when": "The three seams open, and two numbers exist: RMSE at fixed wall-clock time, and the cost of price plus all sensitivities over the cost of price alone, single digit and flat in the number of sensitivities.",
           "progress": "Step 1 of 6: the validation harness."
         },
         {
           "title": "Probability",
           "status": "live",
-          "what": "Blitzstein & Hwang Ch 1–4 with Harvard Stat 110, then Ch 5–10.",
+          "items": [
+            "Blitzstein & Hwang, Introduction to Probability, Ch 1–4, with the Harvard Stat 110 lectures",
+            "Then Ch 5–10, most of the book; Ch 9 takes the longest"
+          ],
           "done_when": "Bayes applied cold in an unfamiliar setup on paper, and any Mosteller problem solved cold.",
           "progress": "Chapters 1–2 this fortnight."
         },
         {
           "title": "Floating point",
           "status": "live",
-          "what": "Goldberg, then Higham Ch 1–2. Kahan vs pairwise vs naive summation over ten million terms; -ffast-math flag by flag; FMA and reassociation.",
+          "items": [
+            "Goldberg, What Every Computer Scientist Should Know About Floating-Point Arithmetic, before the harness tolerance is chosen",
+            "Higham, Accuracy and Stability of Numerical Algorithms, Ch 1–2",
+            "Kahan and pairwise summation against naive over ten million terms; -ffast-math sub-flag by sub-flag; FMA and reassociation"
+          ],
           "done_when": "The harness tolerance chosen and defended, and why a stable algorithm on an ill-conditioned problem still fails.",
           "progress": "Goldberg is done."
         },
         {
           "title": "Linear algebra",
           "status": "later",
-          "what": "Strang, covariance and Cholesky, with MIT 18.06.",
+          "items": [
+            "Strang, Introduction to Linear Algebra: covariance and the Cholesky decomposition, with MIT 18.06"
+          ],
           "done_when": "What the eigenvalues of a covariance matrix mean, and what Cholesky is for."
         },
         {
           "title": "Practice",
-          "status": "ongoing",
-          "what": "Mosteller alternating with Winkler. The Mathematics of Poker, Part I. Heard on the Street, quantitative sections twice."
+          "status": "later",
+          "because": "After Blitzstein & Hwang Ch 3, because the problems assume conditioning and random variables.",
+          "items": [
+            "Mosteller, Fifty Challenging Problems in Probability, alternating with Winkler, Mathematical Puzzles",
+            "Chen & Ankenman, The Mathematics of Poker, Part I and the toy games, argued aloud on paper",
+            "Crack, Heard on the Street, quantitative sections, twice"
+          ]
         }
       ]
     },
     {
       "id": "performance",
+      "code": "C4",
       "name": "Performance engineering",
       "state": "active",
       "goal": "Know why code is fast or slow, and prove it with your own measurements.",
       "why": "Speed is something you measure, not guess. A working model of the machine turns \"why is this slow?\" into a question with an answer.",
       "now": "CSAPP Ch 2, deep on §2.4 floating point.",
-      "gate": "For both the M1 Max and the 9800X3D, every measurement row filled from your own benchmarks, and why the machines differ on each.",
+      "gate": "Every measurement in rungs 1–4 done on both machines, from programs you wrote, with the difference between the machines explained for each.",
+      "continuous": [
+        "Muratori, Performance-Aware Programming: one section with its homework each week",
+        "Berger, Performance Matters, on measurement bias, in support of the variance rule"
+      ],
       "rungs": [
         {
           "title": "A model and the instruments",
           "status": "live",
-          "what": "CSAPP Ch 1–2. Algorithmica on the RAM model and the cache hierarchy. Bakhvalov, Performance Analysis and Tuning, Part 1.",
-          "done_when": "Cache line size, L1/L2/L3 capacity and associativity, and memory latency per level, measured on both machines.",
+          "because": "First, because prediction needs a model and the labs need instruments.",
+          "items": [
+            "CSAPP Ch 1; §2.4 floating point; the rest of Ch 2 for integers and overflow",
+            "Algorithmica: the RAM-model and cache-hierarchy articles",
+            "Bakhvalov, Performance Analysis and Tuning on Modern CPUs, Part 1 Ch 1–6: perf, flamegraphs, top-down analysis"
+          ],
+          "done_when": "The pricer's per-path loop profiled on both machines (perf on the 9800X3D, Instruments on the M1 Max), and you can say where its time goes on each and why they differ.",
           "progress": "CSAPP Ch 1 is done."
         },
         {
           "title": "The instruction level",
           "status": "next",
-          "what": "CSAPP Ch 3 with the bomb lab, then Ch 5. Carruth on compiler optimisation. Branch mispredict cost, sorted vs shuffled.",
-          "done_when": "Bomb lab done and the mispredict row filled."
+          "because": "After rung 1, because the bomb lab needs the instruments.",
+          "items": [
+            "CSAPP Ch 3 in full, with the bomb lab",
+            "CSAPP Ch 5",
+            "Carruth, Understanding Compiler Optimization",
+            "A data-dependent branch timed over sorted then shuffled input, on both machines: the gap is the mispredict cost"
+          ],
+          "done_when": "The bomb lab done, and the mispredict cost measured on both machines with the difference explained."
         },
         {
           "title": "The memory hierarchy",
           "status": "later",
-          "what": "CSAPP Ch 6 with the cache lab. Drepper, Fog, Hennessy & Patterson, data-oriented design. TLB reach, huge pages, bandwidth.",
-          "done_when": "Cache lab done and those rows filled."
+          "because": "After rung 2, because cache effects are only attributable to a loop once you can read the loop.",
+          "items": [
+            "CSAPP Ch 6, with the cache lab",
+            "Drepper, What Every Programmer Should Know About Memory, §3",
+            "Fog, Optimizing Software in C++, §7–9; Hennessy & Patterson Ch 2; Acton, Data-Oriented Design and C++; MIT 6.172 L1",
+            "Four programs: TLB reach, huge-page delta (9800X3D only), page-fault cost, sustained bandwidth"
+          ],
+          "done_when": "The cache lab done and the four programs run, with each difference between the machines explained."
         },
         {
           "title": "Vectorisation and the OS boundary",
           "status": "later",
-          "what": "Auto-vectorisation failures from the compiler's reports. Syscall and context-switch cost.",
-          "done_when": "A loop of your own vectorised, why it wasn't stated from the report, the last two rows filled."
+          "because": "After rung 3, because it needs the memory model.",
+          "items": [
+            "Fog §12, vector operations; Doumler, Want Fast C++? Know Your Hardware",
+            "Auto-vectorisation failures read from the compiler's own reports: aliasing, restrict, alignment, trip counts",
+            "Two programs: syscall cost, and context-switch cost through a pipe"
+          ],
+          "done_when": "A loop of your own vectorised, why it previously wasn't stated from the report, and both programs run with the machines' difference explained."
         }
       ]
     },
     {
       "id": "concurrency",
+      "code": "C5",
       "name": "Concurrency and memory models",
-      "state": "queued",
+      "state": "active",
       "goal": "Understand memory ordering well enough to write concurrent code without guessing.",
       "why": "Concurrent code that looks right is often wrong. Knowing what the memory model actually guarantees is the only way to write it without guessing.",
       "now": "Not started. Williams, C++ Concurrency in Action, Ch 5 first.",
+      "method": "This ladder is a genuine dependency chain.",
       "rungs": [
         {
           "title": "Correctness",
           "status": "live",
-          "what": "Williams Ch 5. ThreadSanitizer in CI from the first thread.",
+          "items": [
+            "Williams, C++ Concurrency in Action, Ch 5",
+            "ThreadSanitizer in CI from the first thread"
+          ],
           "done_when": "Happens-before and the six orderings explained without notes."
         },
         {
           "title": "Why the orderings exist",
           "status": "next",
-          "what": "Sorin, Hill & Wood, A Primer on Memory Consistency, Ch 1–5. Sutter, atomic<> Weapons.",
-          "done_when": "Why x86 and ARM differ, in hardware terms."
+          "items": [
+            "Sorin, Hill & Wood, A Primer on Memory Consistency and Cache Coherence, Ch 1–5",
+            "Sutter, atomic<> Weapons, both parts"
+          ],
+          "done_when": "Why x86 and ARM differ, in terms of the hardware."
         },
         {
           "title": "Formal models and litmus tests",
           "status": "later",
-          "what": "x86-TSO, ARM's litmus cookbook, SB/MP/LB/IRIW by hand, then herd7 and litmus7.",
-          "done_when": "A litmus outcome observed on the M1 Max that the 9800X3D can't produce, mechanism explained."
+          "because": "The tests mean nothing without rung 2.",
+          "items": [
+            "Sewell et al., x86-TSO",
+            "ARM's barrier litmus test cookbook",
+            "SB, MP, LB and IRIW by hand, then under herd7 and litmus7",
+            "Preshing's articles, now and not before"
+          ],
+          "done_when": "A litmus outcome observed on the M1 Max that the 9800X3D can't produce, with the mechanism explained."
         },
         {
           "title": "Coherence in practice",
           "status": "later",
-          "what": "False sharing built on real accumulators, attributed with a profiler, padded, re-measured.",
+          "because": "Needs the instruments from performance rung 1.",
+          "items": [
+            "Per-thread counters packed into one array so they share cache lines: measured, attributed with a profiler, padded apart, re-measured, then contrasted with one shared counter"
+          ],
           "done_when": "Before-and-after numbers with variance, and the attribution written."
         },
         {
           "title": "The SPSC queue",
           "status": "later",
-          "what": "Mutex version, then lock-free, benchmarked. The happens-before argument longhand.",
-          "done_when": "The argument holds and the benchmark shows what lock-free bought."
+          "items": [
+            "Williams Ch 6, then Ch 7",
+            "A mutex-based queue first, then lock-free, benchmarked against each other with variance",
+            "The happens-before argument for the lock-free version, longhand",
+            "Every ordering classified as load-bearing or not, with what the weaker one would break"
+          ],
+          "done_when": "The argument holds, and the benchmark shows what lock-free actually bought."
         }
       ]
     },
     {
       "id": "design",
+      "code": "C3",
       "name": "Software design",
       "state": "active",
-      "goal": "Taste: structure for clarity and simplicity, and model a problem well.",
+      "goal": "Taste in software design: structuring for clarity and simplicity, and modelling a problem well.",
       "why": "Clear structure is what lets code keep changing. Small, timed builds train the instinct for where the boundaries go.",
       "now": "Kernighan & Pike, and the next microapplication in your order.",
+      "method": "Microapplications, where design taste is actually built. Read the initial spec only, implement in 15–20 minutes, then extensions in 10–15, 15–20 and 20–25. No AI, and never a duplicate of a live project. The extensions are the point: each lands on a boundary you committed to before you knew it was coming, and which ones bend cheaply and which have to be torn out is the lesson.",
       "rungs": [
         {
           "title": "The small scale",
           "status": "live",
-          "what": "Kernighan & Pike, The Practice of Programming, with notes. Microapplications 1–10: spec only, build in 15–20 min, three timed extensions, no AI.",
+          "because": "First, because it is language-light and pays off on the next thing you write.",
+          "items": [
+            "Kernighan & Pike, The Practice of Programming, the whole book with notes",
+            "Microapplications 1–10"
+          ],
           "done_when": "The book finished with notes, and ten microapplications shipped."
         },
         {
           "title": "The module scale",
           "status": "next",
-          "what": "Ousterhout, A Philosophy of Software Design. Microapplications 11–20. A written page per pricer seam.",
-          "done_when": "Ousterhout finished, twenty shipped, the three seam pages written."
+          "because": "After rung 1, because the microapplication extensions give you the failures Ousterhout names. Read him once you've felt them.",
+          "items": [
+            "Ousterhout, A Philosophy of Software Design",
+            "Microapplications 11–20",
+            "A written page per pricer seam as each is cut: what varies behind it, what the boundary cost. The seams are cut at pricer step 3, so this rung finishes after it"
+          ],
+          "done_when": "Ousterhout finished, twenty microapplications shipped, and the three seam pages written."
         },
         {
-          "title": "QuantLib against the pricer",
+          "title": "QuantLib, against the pricer",
           "status": "later",
-          "what": "Six questions traced in QuantLib and answered for the pricer.",
+          "because": "After rung 2, because without the vocabulary this is sightseeing.",
+          "items": [
+            "Six questions, each traced in QuantLib and answered for your pricer, with the constraint that makes each the right choice",
+            "Instrument and PricingEngine; the Monte Carlo framework; how payoffs compose; curve bootstrapping; volatility surfaces; where the genericity actually lives"
+          ],
           "done_when": "Six pages written and reviewed."
         }
-      ],
-      "method": "Microapplications: read the spec only, build in 15–20 minutes, then three extensions in 10–15, 15–20 and 20–25. No AI, and never a duplicate of a live project. Afterwards, note which boundaries bent cheaply and which had to be torn out."
+      ]
     },
     {
       "id": "systems",
+      "code": "C6",
       "name": "Systems and low-latency architecture",
-      "state": "horizon",
+      "state": "active",
       "kind": "lines",
-      "goal": "How a real low-latency system is built end to end, well enough to design one yourself.",
+      "goal": "Understand how a real low-latency system is built, end to end, well enough to design one yourself.",
       "why": "Where every other capability meets: how a real low-latency system is built end to end, from the wire to the decision.",
-      "now": "Not started.",
-      "gate": "On a whiteboard: wire to order book, every data structure choice and its rejected alternative, and what you'd measure at each stage.",
+      "now": "Not started. Three lines; only the Disruptor paper depends on another line.",
+      "gate": "On a whiteboard: the path from wire to order book, every data structure choice and the alternative you rejected, and what you'd measure at each stage and roughly what the number should be.",
       "rungs": [
         {
-          "title": "Machine and OS",
-          "status": "later",
-          "what": "CSAPP Ch 9 with the malloc lab. OSTEP chapters on memory and scheduling. Slab allocator and tcmalloc.",
-          "done_when": "Malloc lab passes, and what a production allocator does that yours doesn't."
+          "title": "The machine and the OS",
+          "status": "live",
+          "because": "In order.",
+          "items": [
+            "CSAPP Ch 9, virtual memory, with the malloc lab",
+            "Operating Systems: Three Easy Pieces, Ch 13–20, then 7–10, then 36",
+            "Bonwick, The Slab Allocator, and tcmalloc's design document, read against your own allocator"
+          ],
+          "done_when": "The malloc lab passes, and you can say what a production allocator does that yours doesn't."
         },
         {
-          "title": "Network path",
-          "status": "later",
-          "what": "Beej's Guide. TCP/IP Illustrated Vol 1 on connections and data flow. One io_uring program.",
+          "title": "The network path",
+          "status": "live",
+          "because": "In order.",
+          "items": [
+            "Beej's Guide to Network Programming",
+            "Stevens, TCP/IP Illustrated Vol 1: TCP connection management and data flow only",
+            "One liburing program batching reads through io_uring"
+          ],
           "done_when": "Walk the TCP state machine and say where latency hides between the NIC and user space."
         },
         {
           "title": "Market structure",
-          "status": "later",
-          "what": "Harris, Trading and Exchanges Ch 1–6. CME and NYSE Pillar. The LMAX Disruptor. The Flash Crash, GameStop, March 2020.",
+          "status": "live",
+          "because": "Any order. Needs no systems knowledge; commute reading.",
+          "items": [
+            "Harris, Trading and Exchanges, Ch 1–6",
+            "CME's match algorithms, and NYSE Pillar's order types and priority rules",
+            "The LMAX Disruptor paper, after the machine-and-OS line",
+            "One page each from the primary reports: the Flash Crash of May 2010, GameStop in January 2021, the Treasury market in March 2020"
+          ],
           "done_when": "The three pages written."
         },
         {
           "title": "Alongside",
           "status": "later",
-          "what": "isolcpus, IRQ affinity and transparent huge pages, each measured one at a time. Gregg, Systems Performance, and bpftrace."
+          "because": "After concurrency rung 5, because it needs a latency-sensitive program of your own.",
+          "items": [
+            "The lock-free SPSC queue's round-trip latency distribution, re-measured with isolcpus, IRQ affinity and transparent huge pages changed one at a time",
+            "Gregg, Systems Performance, as reference, and bpftrace as the instrument"
+          ]
         }
       ]
     }

@@ -173,14 +173,38 @@ function renderWay(){
       <h1 class="title">${esc(d.title)}</h1>
       ${DATA.reading.map(r => `<p class="why">${esc(r)}</p>`).join("")}
       <p class="asof">The plan as of ${fmtDate(parseDate(DATA.updated))}.</p>
+      <nav class="index" aria-label="Parts of the phase"><a href="${to.way("throughout")}">Throughout</a><span class="sep"> · </span><a href="${to.way("capabilities")}">The capabilities</a><span class="sep"> · </span><a href="${to.way("works")}">Published work</a></nav>
     </header>
+    ${throughout()}
+    <div id="cap-capabilities"></div>
     ${DATA.capabilities.map(c => `<section class="waycap" id="cap-${esc(c.id)}">
       <a class="cap-name" href="${to.cap(c.id)}">${esc(c.name)} ${go}</a>
       <p class="state">${esc(STATE_LABEL[c.state] || c.state)} · ${position(c)}</p>
       <ol class="rungs">${c.rungs.map((r, i) =>
         `<li class="rung ${r.status}"><a class="rt" href="${to.cap(c.id, i + 1)}">${rungTitle(r, i)}</a></li>`).join("")}</ol>
       <p class="complete"><em>Complete when</em> ${esc(completeWhen(c))}</p>
-    </section>`).join("")}`;
+    </section>`).join("")}
+    ${works()}`;
+}
+
+function throughout(){
+  const t = DATA.destination.throughout;
+  if (!t) return "";
+  return `<section class="part" id="cap-throughout"><h2 class="part-h">Throughout: conditions on all the work</h2>
+    ${t.map(g => `<div class="group"><p class="when-h">${esc(g.title)}${g.note ? ` · ${esc(g.note)}` : ""}</p>
+      <ul class="items">${g.items.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
+  </section>`;
+}
+
+function works(){
+  const w = DATA.works;
+  if (!w) return "";
+  const piece = x => `<li><span class="wname">${esc(x.name)}</span> ${esc(x.what)}${x.rides ? `<span class="note">Rides ${esc(x.rides.charAt(0).toLowerCase() + x.rides.slice(1))}; ${esc(x.size)}.</span>` : ""}</li>`;
+  return `<section class="part" id="cap-works"><h2 class="part-h">Published work</h2>
+    <p>${esc(w.about)}</p>
+    <div class="group"><p class="when-h">Next, in order</p><ul class="items works">${w.queue.map(piece).join("")}</ul></div>
+    <div class="group"><p class="when-h">Shipped</p><ul class="items works">${w.shipped.map(piece).join("")}</ul></div>
+  </section>`;
 }
 
 /* ---------- Capability ---------- */
@@ -192,6 +216,8 @@ function renderCap(id){
   // Every step in full; how brightly it's lit says where attention belongs.
   const rung = (r, i) => `<li class="rung ${r.status}" id="step-${i + 1}">
     <p class="rt">${rungTitle(r, i)}</p>
+    ${r.because ? `<p class="because">${esc(r.because)}</p>` : ""}
+    ${r.items ? `<ul class="items">${r.items.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
     ${r.what ? `<p class="what">${esc(r.what)}</p>` : ""}
     ${r.progress ? `<p class="sofar"><em>So far</em> ${esc(r.progress)}</p>` : ""}
     ${r.done_when ? `<p class="dw"><em>Finished when</em> ${esc(r.done_when)}</p>` : ""}
@@ -201,7 +227,7 @@ function renderCap(id){
     ${byline()}
     ${up(to.way(c.id), DATA.destination.title)}
     <header class="opening">
-      <p class="eyebrow">${esc(STATE_LABEL[c.state] || c.state)} · ${position(c)}</p>
+      <p class="eyebrow">${c.code ? `${esc(c.code)} · ` : ""}${esc(STATE_LABEL[c.state] || c.state)} · ${position(c)}</p>
       <h1 class="title">${esc(c.name)}</h1>
       <p class="goal">${esc(c.goal)}</p>
     </header>
@@ -213,6 +239,7 @@ function renderCap(id){
       <ol class="rungs full">${c.rungs.map(rung).join("")}</ol>
     </section>
     ${c.method ? `<section class="part"><h2 class="part-h">The method</h2><p>${esc(c.method)}</p></section>` : ""}
+    ${c.continuous ? `<section class="part"><h2 class="part-h">Throughout</h2><ul class="items">${c.continuous.map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>` : ""}
     <section class="part"><h2 class="part-h">${esc(DATA.destination.phase)} is complete when</h2><p class="endline">${esc(completeWhen(c))}</p></section>
 
     <nav class="capnav" aria-label="Other capabilities">

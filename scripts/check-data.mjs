@@ -12,6 +12,9 @@ need(typeof data.owner === "string" && data.owner, "owner is missing");
 need(/^\d{4}-\d{2}-\d{2}$/.test(data.updated ?? ""), "updated must be YYYY-MM-DD");
 for (const k of ["phase", "title", "why"]) need(typeof data.destination?.[k] === "string", `destination.${k} is missing`);
 need(Array.isArray(data.reading), "reading must be a list");
+need(data.destination?.throughout === undefined || data.destination.throughout.every(g => g.title && Array.isArray(g.items)),
+  "destination.throughout must be a list of {title, note?, items}");
+need(data.works === undefined || (Array.isArray(data.works.shipped) && Array.isArray(data.works.queue)), "works needs shipped and queue lists");
 
 const p = data.protocol ?? {};
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -38,6 +41,9 @@ for (const [i, c] of (data.capabilities ?? []).entries()) {
   need(STATES.includes(c.state), `${at}: state must be one of ${STATES.join(", ")}`);
   need(c.kind === undefined || c.kind === "lines", `${at}: kind must be "lines" or absent`);
   need(c.method === undefined || typeof c.method === "string", `${at}: method must be text`);
+  need(c.continuous === undefined || Array.isArray(c.continuous), `${at}: continuous must be a list`);
+  for (const [j, r] of (c.rungs ?? []).entries())
+    need(r.items === undefined || (Array.isArray(r.items) && r.items.every(x => typeof x === "string")), `${at} rung ${j}: items must be a list of text`);
   need(Array.isArray(c.rungs) && c.rungs.length, `${at}: rungs must be a non-empty list`);
   for (const [j, r] of (c.rungs ?? []).entries()) {
     need(typeof r.title === "string" && r.title, `${at} rung ${j}: title is missing`);

@@ -129,6 +129,16 @@ a:active .go{transform:translateX(3px)}
 .rungs.full{margin-top:40px}
 .rungs.full .rung + .rung{margin-top:44px}
 .what{margin-top:10px;font-size:.98rem}
+.because{margin-top:6px;font-style:italic;color:var(--faint);font-size:.93rem}
+.items{margin-top:12px}
+.items li{position:relative;padding-left:1.1em;font-size:.97rem;color:var(--text)}
+.items li::before{content:"–";position:absolute;left:0;color:var(--faint)}
+.items li + li{margin-top:8px}
+.rung.done .items li,.rung.later .items li{color:var(--dim)}
+.group + .group{margin-top:34px}
+.part > p + .group{margin-top:30px}
+.items .note{display:block;margin-top:2px;font-size:.9rem;font-style:italic;color:var(--faint)}
+.wname{font-style:italic;color:var(--parchment);margin-right:.35em}
 .sofar,.dw{margin-top:10px;font-size:.93rem;color:var(--faint)}
 .sofar em,.dw em{color:var(--dim);margin-right:.3em}
 .rung.done .what,.rung.later .what{color:var(--dim)}

@@ -31,7 +31,11 @@ Everything lives in [`data.json`](data.json):
   `later`, or `ongoing`. The live step is the lowest one whose `done_when` isn't met.
   A capability with `"kind": "lines"` has parallel tracks instead of a ladder, so more
   than one can be live. `gate` (optional) says what finishing the phase means for it;
-  `method` (optional) describes how the work is done.
+  `method` (optional) describes how the work is done, `continuous` (optional) lists what runs
+  alongside every rung, and `code` is the capability's number in the phase document (C1–C7).
+  A rung can carry `because` (why it sits where it does) and `items` (its readings and tasks).
+- **destination.throughout**: conditions on all the work (build setup, measurement, practice).
+- **works**: published work, shipped and queued.
 
 ## The views
 
