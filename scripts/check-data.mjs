@@ -32,6 +32,8 @@ need(Array.isArray(p.stack) && p.stack.every(s => s.when && s.what), "protocol.s
 need(Array.isArray(p.recovery), "protocol.recovery must be a list");
 need(Array.isArray(data.capabilities) && data.capabilities.length, "capabilities must be a non-empty list");
 
+// A bullet is text, or {text, sub: [text]}.
+const isBullet = x => typeof x === "string" || (typeof x?.text === "string" && (x.sub === undefined || (Array.isArray(x.sub) && x.sub.every(s => typeof s === "string"))));
 const ids = new Set();
 for (const [i, c] of (data.capabilities ?? []).entries()) {
   const at = `capabilities[${i}] (${c.id ?? "?"})`;
@@ -40,10 +42,13 @@ for (const [i, c] of (data.capabilities ?? []).entries()) {
   for (const k of ["name", "goal", "why", "now"]) need(typeof c[k] === "string" && c[k], `${at}: ${k} is missing`);
   need(STATES.includes(c.state), `${at}: state must be one of ${STATES.join(", ")}`);
   need(c.kind === undefined || c.kind === "lines", `${at}: kind must be "lines" or absent`);
-  need(c.method === undefined || typeof c.method === "string", `${at}: method must be text`);
-  need(c.continuous === undefined || Array.isArray(c.continuous), `${at}: continuous must be a list`);
-  for (const [j, r] of (c.rungs ?? []).entries())
-    need(r.items === undefined || (Array.isArray(r.items) && r.items.every(x => typeof x === "string")), `${at} rung ${j}: items must be a list of text`);
+  const textOrList = v => typeof v === "string" || (Array.isArray(v) && v.every(isBullet));
+  for (const k of ["method", "gate"]) need(c[k] === undefined || textOrList(c[k]), `${at}: ${k} must be text or a list of bullets`);
+  need(c.continuous === undefined || (Array.isArray(c.continuous) && c.continuous.every(isBullet)), `${at}: continuous must be a list of bullets`);
+  for (const [j, r] of (c.rungs ?? []).entries()) {
+    need(r.items === undefined || (Array.isArray(r.items) && r.items.every(isBullet)), `${at} rung ${j}: items must be a list of bullets`);
+    need(r.done_when === undefined || textOrList(r.done_when), `${at} rung ${j}: done_when must be text or a list of bullets`);
+  }
   need(Array.isArray(c.rungs) && c.rungs.length, `${at}: rungs must be a non-empty list`);
   for (const [j, r] of (c.rungs ?? []).entries()) {
     need(typeof r.title === "string" && r.title, `${at} rung ${j}: title is missing`);

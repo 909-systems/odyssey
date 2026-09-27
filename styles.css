@@ -133,6 +133,12 @@ a:active .go{transform:translateX(3px)}
 .items li{position:relative;padding-left:1.1em;font-size:.97rem;color:var(--text)}
 .items li::before{content:"–";position:absolute;left:0;color:var(--faint)}
 .items li + li{margin-top:8px}
+.items .sub{margin-top:6px}
+.items .sub li{font-size:.94rem;color:var(--dim)}
+.items .sub li + li{margin-top:4px}
+.finish .items,.dw .items,.complete .items{margin-top:6px}
+.finish .items li,.dw .items li,.complete .items li{font-size:inherit;color:inherit}
+.part > .items:first-of-type{margin-top:0}
 .rung.done .items li,.rung.later .items li{color:var(--dim)}
 .group + .group{margin-top:34px}
 .part > p + .group{margin-top:30px}

@@ -40,6 +40,19 @@ const up = (href, label) => `<a class="up" href="${href}">← ${esc(label)}</a>`
 const secHead = (title, href, label) =>
   `<div class="sec-h"><h2>${esc(title)}</h2>${href ? `<a href="${href}">${esc(label)} ${go}</a>` : ""}</div>`;
 
+/* ---------- Text ---------- */
+// Plan text is either a sentence or a list of bullets; a bullet can carry sub-bullets.
+function bullets(list, cls = "items"){
+  const li = x => typeof x === "string" ? `<li>${esc(x)}</li>`
+    : `<li>${esc(x.text)}${x.sub ? `<ul class="sub">${x.sub.map(li).join("")}</ul>` : ""}</li>`;
+  return `<ul class="${cls}">${list.map(li).join("")}</ul>`;
+}
+// A labelled block ("Finished when", "Complete when") that reads well as prose or bullets.
+const labelled = (cls, label, v) => Array.isArray(v)
+  ? `<div class="${cls}"><em>${label}</em>${bullets(v)}</div>`
+  : `<p class="${cls}"><em>${label}</em> ${esc(v)}</p>`;
+const prose = (v, cls = "") => Array.isArray(v) ? bullets(v) : `<p class="${cls}">${esc(v)}</p>`;
+
 /* ---------- Plan helpers ---------- */
 const isLines = c => c.kind === "lines";
 const liveRungs = c => c.rungs.filter(r => r.status === "live");
@@ -108,7 +121,7 @@ function recovery(){
 function liveEntry(c){
   const lr = liveRungs(c);
   const finish = !isLines(c) && lr[0]?.done_when
-    ? `<p class="finish"><em>Finished when</em> ${esc(lr[0].done_when)}</p>` : "";
+    ? labelled("finish", "Finished when", lr[0].done_when) : "";
   const titles = lr.map(r => `<a href="${to.cap(c.id, stepNo(c, r))}">${esc(r.title)}</a>`).join(`<span class="sep"> · </span>`);
   return `<article class="cap">
     <a class="cap-name" href="${to.cap(c.id)}">${esc(c.name)} ${go}</a>
@@ -173,7 +186,7 @@ function renderWay(){
       <p class="state">${esc(STATE_LABEL[c.state] || c.state)} · ${position(c)}</p>
       <ol class="rungs">${c.rungs.map((r, i) =>
         `<li class="rung ${r.status}"><a class="rt" href="${to.cap(c.id, i + 1)}">${rungTitle(r, i)}</a></li>`).join("")}</ol>
-      <p class="complete"><em>Complete when</em> ${esc(completeWhen(c))}</p>
+      ${labelled("complete", "Complete when", completeWhen(c))}
     </section>`).join("")}
     ${works()}`;
 }
@@ -183,7 +196,7 @@ function throughout(){
   if (!t) return "";
   return `<section class="part" id="cap-throughout"><h2 class="part-h">Throughout: conditions on all the work</h2>
     ${t.map(g => `<div class="group"><p class="when-h">${esc(g.title)}${g.note ? ` · ${esc(g.note)}` : ""}</p>
-      <ul class="items">${g.items.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
+      ${bullets(g.items)}</div>`).join("")}
   </section>`;
 }
 
@@ -208,10 +221,10 @@ function renderCap(id){
   const rung = (r, i) => `<li class="rung ${r.status}" id="step-${i + 1}">
     <p class="rt">${rungTitle(r, i)}</p>
     ${r.because ? `<p class="because">${esc(r.because)}</p>` : ""}
-    ${r.items ? `<ul class="items">${r.items.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    ${r.items ? bullets(r.items) : ""}
     ${r.what ? `<p class="what">${esc(r.what)}</p>` : ""}
     ${r.progress ? `<p class="sofar"><em>So far</em> ${esc(r.progress)}</p>` : ""}
-    ${r.done_when ? `<p class="dw"><em>Finished when</em> ${esc(r.done_when)}</p>` : ""}
+    ${r.done_when ? labelled("dw", "Finished when", r.done_when) : ""}
   </li>`;
 
   $("#view").innerHTML = `
@@ -229,9 +242,9 @@ function renderCap(id){
       ${pathLine(c)}
       <ol class="rungs full">${c.rungs.map(rung).join("")}</ol>
     </section>
-    ${c.method ? `<section class="part"><h2 class="part-h">The method</h2><p>${esc(c.method)}</p></section>` : ""}
-    ${c.continuous ? `<section class="part"><h2 class="part-h">Throughout</h2><ul class="items">${c.continuous.map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>` : ""}
-    <section class="part"><h2 class="part-h">${esc(DATA.destination.phase)} is complete when</h2><p class="endline">${esc(completeWhen(c))}</p></section>
+    ${c.method ? `<section class="part"><h2 class="part-h">The method</h2>${prose(c.method)}</section>` : ""}
+    ${c.continuous ? `<section class="part"><h2 class="part-h">Throughout</h2>${bullets(c.continuous)}</section>` : ""}
+    <section class="part"><h2 class="part-h">${esc(DATA.destination.phase)} is complete when</h2>${prose(completeWhen(c), "endline")}</section>
 
     <nav class="capnav" aria-label="Other capabilities">
       ${prev ? `<a href="${to.cap(prev.id)}"><span>← previous</span>${esc(prev.name)}</a>` : "<span></span>"}
