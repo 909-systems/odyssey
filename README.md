@@ -41,6 +41,12 @@ Everything lives in [`data.json`](data.json):
 - **A capability** (`#/c/<id>`): now, why, every step in full, and what completes it.
 - **The protocol** (`#/protocol`): the day, the week, the month, training, the stack.
 
+Moving around: a heading opens the thing it names (the phase title opens the whole phase,
+a capability's name opens it, any step opens that step). Each home section says in its
+heading row where its full page is. "Up" goes one level: a capability back to its place in
+the phase, the phase and the protocol back home. The byline always goes home. Deep links
+land on the right spot: `#/c/<id>/<step>`, `#/way/<id>`, `#/protocol/<part>`.
+
 ## Updating it
 
 Edit `data.json`, bump `updated`, and push. The deploy runs `scripts/check-data.mjs`

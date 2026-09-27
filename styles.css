@@ -48,8 +48,14 @@ ul,ol{list-style:none;margin:0;padding:0}
 
 /* ---------- Frame ---------- */
 .byline{font-size:.78rem;letter-spacing:.08em;color:var(--faint);display:flex;justify-content:space-between;gap:12px}
-.back{display:inline-block;color:var(--dim);font-style:italic;padding:8px 0;margin-top:8px}
-.more{display:inline-block;margin-top:44px;font-style:italic;color:var(--dim);padding:6px 0}
+.byline a{padding:6px 0;margin:-6px 0}
+.up{display:inline-block;color:var(--dim);font-style:italic;padding:8px 0;margin-top:8px}
+
+/* A door: anything that opens a page carries the same quiet arrow. */
+.go{display:inline-block;color:var(--faint);font-size:.9rem;font-style:normal;font-weight:350;margin-left:.2em;vertical-align:.12em;transition:transform .3s ease}
+a:active .go{transform:translateX(3px)}
+.title .go{font-size:.42em;vertical-align:.5em}
+.door{display:block}
 
 .opening{margin-top:18vh}
 .eyebrow{font-style:italic;color:var(--dim);font-size:1.02rem}
@@ -59,7 +65,9 @@ ul,ol{list-style:none;margin:0;padding:0}
 .stale,.asof{margin-top:26px;font-style:italic;color:var(--faint);font-size:.95rem}
 
 .sec{margin-top:20vh}
-.sec-h{font-style:italic;color:var(--faint);font-size:1rem;margin-bottom:36px}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:36px}
+.sec-h h2{font-style:italic;color:var(--faint);font-size:1rem;font-weight:350}
+.sec-h a{font-style:italic;color:var(--dim);font-size:.95rem;padding:8px 0;margin:-8px 0}
 
 /* ---------- The day ---------- */
 .when + .when{margin-top:34px}
@@ -74,8 +82,9 @@ ul,ol{list-style:none;margin:0;padding:0}
 /* ---------- What's live ---------- */
 .cap{display:block}
 .cap + .cap{margin-top:64px}
-.cap-name{font-size:.95rem;color:var(--dim);font-style:italic}
+.cap-name{display:inline-block;font-size:.95rem;color:var(--dim);font-style:italic;padding:4px 0;margin:-4px 0}
 .cap-live{margin-top:6px;font-size:1.65rem;line-height:1.25}
+.cap-live .sep{color:var(--faint)}
 .nowtext{margin-top:12px}
 .finish{margin-top:12px;font-size:.93rem;color:var(--faint);line-height:1.65}
 .finish em{color:var(--dim);margin-right:.3em}
@@ -86,6 +95,7 @@ ul,ol{list-style:none;margin:0;padding:0}
 .path .live{color:var(--ember)}
 .path .next,.path .ongoing{color:var(--dim)}
 .path .sep{opacity:.6}
+.path a{padding:3px 0}
 
 /* ---------- Not yet begun ---------- */
 .quiet{display:block}
@@ -130,16 +140,19 @@ ul,ol{list-style:none;margin:0;padding:0}
 .capnav a.nx{text-align:right}
 
 /* ---------- The whole way ---------- */
-.waycap{display:block;margin-top:11vh}
-.waycap .cap-name{display:block;font-size:1.3rem;font-style:normal;font-weight:300;color:var(--parchment)}
+.waycap{margin-top:11vh}
+.waycap .cap-name{font-size:1.3rem;font-style:normal;font-weight:300;color:var(--parchment)}
 .waycap .state{display:block;font-style:italic;color:var(--faint);font-size:.95rem;margin-top:2px}
 .waycap .rungs{margin-top:20px}
-.waycap .rung + .rung{margin-top:8px}
-.waycap .rt{font-size:1.05rem}
+.waycap .rung + .rung{margin-top:2px}
+.waycap .rt{display:block;font-size:1.05rem;padding:4px 0}
 .complete{margin-top:18px;font-size:.93rem;color:var(--faint)}
 .complete em{color:var(--dim);margin-right:.3em}
 
 /* ---------- The protocol ---------- */
+.index{margin-top:26px;font-style:italic;color:var(--dim);font-size:.98rem}
+.index a{padding:6px 0}
+.index .sep{color:var(--faint)}
 .split li{display:flex;gap:16px;color:var(--dim)}
 .split li + li{margin-top:8px}
 .split .dk{flex:none;width:2.4em;font-style:italic;color:var(--faint)}
