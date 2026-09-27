@@ -42,6 +42,12 @@
           "Every dynamic programming recurrence written as one mathematical line before any code",
           "Every two weeks: four problems from a past Div 3 round, two hours, no aids"
         ]
+      },
+      {
+        "title": "Daily, in dead time",
+        "items": [
+          "Zetamac, two minutes, floor of 50"
+        ]
       }
     ]
   },
@@ -252,7 +258,7 @@
             },
             "Alongside: CSES Sorting and Searching, core then extended"
           ],
-          "done_when": "A hash map written from a blank file in under 30 minutes that survives 10⁷ adversarial operations."
+          "done_when": "A hash map written from a blank file in under 30 minutes that survives ten million adversarial operations."
         },
         {
           "title": "Paradigms",
@@ -569,16 +575,38 @@
           ]
         },
         {
-          "title": "The instruction level",
+          "title": "The instruction level and the pipeline",
           "status": "next",
-          "because": "After rung 1, because the bomb lab needs the instruments.",
+          "because": "After rung 1, because the bomb lab needs the instruments, and CSAPP Ch 4's processor is built on the instruction set Ch 3 teaches.",
           "items": [
             "CSAPP Ch 3 in full, with the bomb lab",
-            "CSAPP Ch 5",
+            {
+              "text": "CSAPP Ch 4, processor architecture, with the practice problems:",
+              "sub": [
+                "§4.1, the Y86-64 instruction set, skimmed",
+                "§4.3, the sequential processor",
+                "§4.4, general principles of pipelining",
+                "§4.5, the pipelined processor: hazards, forwarding, load/use stalls, branch prediction and recovery"
+              ]
+            },
+            {
+              "text": "Hennessy & Patterson, Computer Architecture, Ch 3, instruction-level parallelism",
+              "sub": [
+                "Branch prediction, dynamic scheduling, speculation with a reorder buffer, multiple issue",
+                "How out-of-order execution actually works, deeper than Bakhvalov's survey"
+              ]
+            },
+            "CSAPP Ch 5, which puts that machine model to work on real loops",
+            "Fog, The Microarchitecture of Intel, AMD and VIA CPUs: the AMD Zen chapters, as reference for the 9800X3D",
             "Carruth, Understanding Compiler Optimization",
-            "A data-dependent branch timed over sorted then shuffled input, on both machines: the gap is the mispredict cost"
+            "A data-dependent branch timed over sorted then shuffled input, on both machines. The gap is the mispredict cost"
           ],
-          "done_when": "The bomb lab done, and the mispredict cost measured on both machines with the difference explained."
+          "done_when": [
+            "The bomb lab done",
+            "Walk an instruction sequence through a five-stage pipeline, naming every hazard, forward and stall",
+            "Explain how register renaming and the reorder buffer let an out-of-order core keep working past a cache miss",
+            "The mispredict cost measured on both machines, with the difference explained"
+          ]
         },
         {
           "title": "The memory hierarchy",
@@ -586,7 +614,7 @@
           "because": "After rung 2, because cache effects are only attributable to a loop once you can read the loop.",
           "items": [
             "CSAPP Ch 6, with the cache lab",
-            "Drepper, What Every Programmer Should Know About Memory, §3",
+            "Drepper, What Every Programmer Should Know About Memory, §3: deeper than CSAPP on associativity, prefetching and coherence",
             "Fog, Optimizing Software in C++, §7–9",
             "Hennessy & Patterson Ch 2",
             "Acton, Data-Oriented Design and C++",
@@ -730,7 +758,7 @@
               ]
             }
           ],
-          "done_when": "Six pages written and reviewed."
+          "done_when": "Six pages written and reviewed with Claude."
         }
       ]
     },
@@ -766,7 +794,7 @@
           "because": "In order.",
           "items": [
             "Beej's Guide to Network Programming",
-            "Stevens, TCP/IP Illustrated Vol 1: TCP connection management and data flow only",
+            "Stevens, TCP/IP Illustrated Vol 1: TCP connection management and data flow only, three or four chapters",
             "One liburing program batching reads through io_uring"
           ],
           "done_when": "Walk the TCP state machine and say where latency hides between the NIC and user space."
