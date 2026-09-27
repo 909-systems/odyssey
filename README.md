@@ -16,15 +16,30 @@ offline; when you're online it picks up plan changes the next time you open it.
 Everything lives in [`data.json`](data.json):
 
 - **destination**: the phase you're in and why.
-- **rules**: what to do when you feel lost.
+- **reading**: how to read the plan (the live step, priority order).
+- **protocol**: the daily prescription and everything under it.
+  - `day`: blocks by time of day, each a list of things to do. `{training}` is replaced with
+    today's session from the split, and an item can carry a quiet `note`.
+  - `never`, `never_how`: the don'ts, and how they're kept.
+  - `week` (an item with `"day": "Sun"` also shows that evening), `month`.
+  - `training.split` (Mon to Sun) and `training.rules`, `stack`, `recovery`.
 - **capabilities**, in priority order, each with a `state`:
   - `active`: in play now
   - `queued`: up next, not started
   - `horizon`: further out
-- Each capability has **rungs**, and each rung has a `status`: `done`, `live`, `next`,
-  `later`, or `ongoing`. The live rung is the lowest one whose `done_when` isn't met.
+- Each capability has **rungs** (steps), and each has a `status`: `done`, `live`, `next`,
+  `later`, or `ongoing`. The live step is the lowest one whose `done_when` isn't met.
   A capability with `"kind": "lines"` has parallel tracks instead of a ladder, so more
-  than one can be live.
+  than one can be live. `gate` (optional) says what finishing the phase means for it;
+  `method` (optional) describes how the work is done.
+
+## The views
+
+- **Home**: today's prescription, what's live (with each capability's whole path on one
+  line), what hasn't begun, and what to do when a day goes wrong.
+- **The whole way** (`#/way`): every capability and every step in the phase.
+- **A capability** (`#/c/<id>`): now, why, every step in full, and what completes it.
+- **The protocol** (`#/protocol`): the day, the week, the month, training, the stack.
 
 ## Updating it
 

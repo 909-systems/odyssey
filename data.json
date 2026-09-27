@@ -6,12 +6,113 @@
     "title": "Foundations",
     "why": "A simple framework for growing as an engineer. A handful of capabilities, each climbed one rung at a time. A rung is finished when you can show it, not when you've read about it."
   },
-  "rules": [
-    "The live rung is the lowest one whose done-when isn't met.",
-    "Capabilities are in priority order. When two compete for a slot, the higher one wins.",
-    "A missed day costs one day. It costs the plan nothing. No debt, no catch-up.",
-    "No replanning. Setting what this week should prove is fine; rebuilding the roadmap isn't."
+  "reading": [
+    "The live step is the lowest one whose finish line isn't met yet.",
+    "Capabilities are in priority order. When two compete for a slot, the higher one wins."
   ],
+  "protocol": {
+    "day": [
+      {
+        "when": "Morning",
+        "do": [
+          "Wake at the same time. Every day, no exceptions.",
+          "Get outside the flat."
+        ]
+      },
+      {
+        "when": "Through the day",
+        "do": [
+          {
+            "text": "One focus block on a live step. When two compete, the higher one wins.",
+            "note": "If a weekday block goes flat: the next chapter of Kernighan & Pike, with notes."
+          },
+          "Train: {training}. Then ten minutes of mobility.",
+          "Zetamac.",
+          "One LeetCode problem into the solve log.",
+          "Money Stuff, and a little news.",
+          "Eat in a calorie deficit."
+        ]
+      },
+      {
+        "when": "Evening",
+        "do": [
+          "The phone charges outside the bedroom. No screens in the final hour.",
+          "Read before bed, ten minutes at least.",
+          "Seven and a half hours in bed, at least."
+        ]
+      }
+    ],
+    "never": "No drinking, no smoking, no gooning, no dooming, no scrolling.",
+    "never_how": [
+      "Zero, not less. Zero needs no decision.",
+      "Remove the access; don't resist the urge."
+    ],
+    "week": [
+      {
+        "text": "One thing shipped and finished."
+      },
+      {
+        "text": "One conversation you started."
+      },
+      {
+        "text": "Cleaning and maintenance, slotted."
+      },
+      {
+        "text": "The Sunday sync: count the week, set the next.",
+        "day": "Sun"
+      }
+    ],
+    "month": [
+      "Takeaway two or three times, no more."
+    ],
+    "training": {
+      "split": {
+        "Mon": "Lower A, squat focus, plus a finisher",
+        "Tue": "Upper A, horizontal push and pull, plus a finisher",
+        "Wed": "VO2 intervals",
+        "Thu": "Lower B, hinge focus, plus a finisher",
+        "Fri": "Upper B, vertical push and pull, plus a finisher",
+        "Sat": "Zone 2, 45–60 minutes on the Peloton",
+        "Sun": "Arms, wrists, forearms and grip, twice a month"
+      },
+      "rules": [
+        "Exercise five days a week.",
+        "Main lift 4 sets of 4 to 6 at RPE 7 to 8. Accessories 3 sets of 8 to 12 at RPE 8. Hit the top of the range on every set, then add weight next session.",
+        "Finishers: 8 to 10 minutes, after lifting. Carries and rower on upper days, bike or sled on lower days.",
+        "Tibialis raises and the single-leg calf eccentric in every lower session.",
+        "Ten minutes of mobility after every session: front rack, thoracic, ankles.",
+        "Wednesday VO2: 4 × 4 minutes at 180–190 bpm, 3 minutes easy between, 10 minutes warm-up, 5 minutes cool-down. Don't stack fatigue into it on Tuesday.",
+        "Deload every sixth week: same sessions, 60% of the weight, full reps."
+      ]
+    },
+    "stack": [
+      {
+        "when": "On waking, fasted",
+        "what": "L-tyrosine 2000 mg, L-theanine 200 mg, then coffee in the same window."
+      },
+      {
+        "when": "With the smoothie, about 30 minutes later",
+        "what": "Creatine 3–5 g, D3 + K2, B12 (methylcobalamin), benfotiamine 150–300 mg, zinc picolinate 15 mg."
+      },
+      {
+        "when": "Dinner",
+        "what": "Omega-3, 1–2 g EPA/DHA."
+      },
+      {
+        "when": "Bedtime",
+        "what": "Magnesium glycinate 200–400 mg."
+      },
+      {
+        "when": "The smoothie",
+        "what": "150 ml unsweetened oat milk, 80 g 2% Greek yogurt, 100 g frozen berries, 50 g frozen banana, 10 g ground flax, 30 g protein powder."
+      }
+    ],
+    "recovery": [
+      "A missed day costs one day. It costs the plan nothing. You return the next morning at the same wake time.",
+      "No debt, no catch-up. Nothing carries between days.",
+      "No replanning. Setting what this week should prove is fine; rebuilding the roadmap isn't."
+    ]
+  },
   "capabilities": [
     {
       "id": "algorithms",
@@ -221,7 +322,8 @@
           "what": "Six questions traced in QuantLib and answered for the pricer.",
           "done_when": "Six pages written and reviewed."
         }
-      ]
+      ],
+      "method": "Microapplications: read the spec only, build in 15–20 minutes, then three extensions in 10–15, 15–20 and 20–25. No AI, and never a duplicate of a live project. Afterwards, note which boundaries bent cheaply and which had to be torn out."
     },
     {
       "id": "systems",
@@ -250,6 +352,11 @@
           "status": "later",
           "what": "Harris, Trading and Exchanges Ch 1–6. CME and NYSE Pillar. The LMAX Disruptor. The Flash Crash, GameStop, March 2020.",
           "done_when": "The three pages written."
+        },
+        {
+          "title": "Alongside",
+          "status": "later",
+          "what": "isolcpus, IRQ affinity and transparent huge pages, each measured one at a time. Gregg, Systems Performance, and bpftrace."
         }
       ]
     }

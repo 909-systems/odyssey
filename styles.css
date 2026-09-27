@@ -7,10 +7,11 @@
   src:url(fonts/newsreader-latin-italic.woff2) format("woff2");
 }
 
-/* Candlelight: deep warm black, parchment text, one amber flame. Gruvbox-derived. */
+/* Candlelight: deep warm black, parchment text, and one amber flame.
+   Amber means one thing only, "live now". Everything else is parchment or ash. */
 :root{
   --night:#0E0C0A;
-  --glow:rgba(215,153,33,.09);
+  --glow:rgba(215,153,33,.08);
   --parchment:#EBDBB2;
   --text:#D5C4A1;
   --dim:#A89984;
@@ -23,8 +24,7 @@
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;background:var(--night)}
 body{
-  margin:0;min-height:100vh;color:var(--text);
-  background:transparent;
+  margin:0;min-height:100vh;color:var(--text);background:transparent;
   font-family:"Newsreader",Charter,"Iowan Old Style",Georgia,serif;
   font-size:18px;line-height:1.7;font-optical-sizing:auto;font-weight:350;
   -webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;
@@ -43,107 +43,117 @@ h1,h2,h3{margin:0;font-weight:300;color:var(--parchment)}
 p{margin:0}
 a{color:inherit;text-decoration:none}
 em{font-style:italic}
-:focus-visible{outline:1px solid var(--ember);outline-offset:6px;border-radius:2px}
+ul,ol{list-style:none;margin:0;padding:0}
+:focus-visible{outline:1px solid var(--dim);outline-offset:6px;border-radius:2px}
 
+/* ---------- Frame ---------- */
 .byline{font-size:.78rem;letter-spacing:.08em;color:var(--faint);display:flex;justify-content:space-between;gap:12px}
+.back{display:inline-block;color:var(--dim);font-style:italic;padding:8px 0;margin-top:8px}
+.more{display:inline-block;margin-top:44px;font-style:italic;color:var(--dim);padding:6px 0}
 
-/* Opening */
-.opening{margin-top:22vh}
-.eyebrow{font-style:italic;color:var(--ember);font-size:1.02rem}
+.opening{margin-top:18vh}
+.eyebrow{font-style:italic;color:var(--dim);font-size:1.02rem}
 .title{font-size:clamp(2.6rem,12vw,3.5rem);line-height:1.06;letter-spacing:-.015em;margin-top:8px}
-.why{margin-top:28px;font-size:1.08rem;color:var(--dim);line-height:1.75}
-.stale{margin-top:28px;font-style:italic;color:var(--ember);font-size:.95rem}
+.why{margin-top:26px;font-size:1.08rem;color:var(--dim);line-height:1.75}
+.why + .why{margin-top:14px}
+.stale,.asof{margin-top:26px;font-style:italic;color:var(--faint);font-size:.95rem}
 
-/* Sections are separated by space alone */
-.sec{margin-top:26vh}
-.sec-h{font-style:italic;color:var(--faint);font-size:1rem;letter-spacing:.01em;margin-bottom:40px}
+.sec{margin-top:20vh}
+.sec-h{font-style:italic;color:var(--faint);font-size:1rem;margin-bottom:36px}
 
-/* What's live */
+/* ---------- The day ---------- */
+.when + .when{margin-top:34px}
+.when-h{font-style:italic;color:var(--faint);font-size:.92rem;margin-bottom:8px}
+.do li{color:var(--text)}
+.do li + li{margin-top:10px}
+.do .note{display:block;margin-top:4px;font-size:.92rem;font-style:italic;color:var(--faint)}
+.today{color:var(--flame)}
+.never-line{color:var(--parchment)}
+.never-how{margin-top:10px;font-style:italic;color:var(--dim);font-size:.98rem}
+
+/* ---------- What's live ---------- */
 .cap{display:block}
 .cap + .cap{margin-top:64px}
-.cap-name{font-size:.95rem;color:var(--dim);font-style:italic;font-weight:350}
-.cap-live{margin-top:6px;font-size:1.65rem;line-height:1.25;color:var(--parchment);font-weight:300}
-.nowtext{margin-top:12px;color:var(--text)}
+.cap-name{font-size:.95rem;color:var(--dim);font-style:italic}
+.cap-live{margin-top:6px;font-size:1.65rem;line-height:1.25}
+.nowtext{margin-top:12px}
 .finish{margin-top:12px;font-size:.93rem;color:var(--faint);line-height:1.65}
-.finish em{color:var(--dim)}
-
-.cap-name .pos{font-style:italic;color:var(--faint)}
+.finish em{color:var(--dim);margin-right:.3em}
 
 /* The whole path in one line: lit where you are, dim where you're headed */
-.path{margin-top:18px;font-size:.9rem;line-height:1.7;color:var(--faint)}
-.path .done{color:var(--faint);text-decoration:line-through;text-decoration-color:rgba(124,111,100,.6)}
+.path{margin-top:16px;font-size:.9rem;line-height:1.7;color:var(--faint)}
+.path .done{text-decoration:line-through;text-decoration-color:rgba(124,111,100,.6)}
 .path .live{color:var(--ember)}
-.path .ongoing{color:var(--dim)}
-.path .next{color:var(--dim)}
-.path .later{color:var(--faint)}
-.path .sep{color:var(--faint);opacity:.6}
-.explore{display:inline-block;margin-top:30px;font-style:italic;color:var(--ember)}
+.path .next,.path .ongoing{color:var(--dim)}
+.path .sep{opacity:.6}
 
-/* Next and further */
+/* ---------- Not yet begun ---------- */
 .quiet{display:block}
-.quiet + .quiet{margin-top:26px}
+.quiet + .quiet{margin-top:22px}
 .quiet .name{color:var(--text)}
 .quiet .sub{display:block;font-style:italic;color:var(--faint);font-size:.95rem}
-.quiet .sub .rn{color:var(--dim)}
+.quiet .sub .rn{font-style:normal;color:var(--dim)}
 
-/* Closing */
-.closing{margin-top:28vh;text-align:center}
-.closing p{font-style:italic;color:var(--dim);font-size:1.05rem;line-height:1.6;max-width:24rem;margin:0 auto}
-.closing p + p{margin-top:34px}
-.flame{display:block;width:5px;height:5px;border-radius:50%;margin:0 auto 44px;background:var(--flame);box-shadow:0 0 18px 6px rgba(250,189,47,.28)}
-.onward{display:block;text-align:center;margin-top:22vh;font-style:italic;color:var(--dim)}
-.onward span{color:var(--ember)}
+/* ---------- Recovery, beneath the flame ---------- */
+.closing{margin-top:24vh;text-align:center}
+.flame{display:block;width:5px;height:5px;border-radius:50%;margin:0 auto 40px;background:var(--flame);box-shadow:0 0 18px 6px rgba(250,189,47,.24)}
+.closing-h{font-style:italic;color:var(--faint);font-size:.92rem;margin-bottom:26px}
+.closing p:not(.closing-h){font-style:italic;color:var(--dim);font-size:1.03rem;line-height:1.6;max-width:24rem;margin:0 auto}
+.closing p:not(.closing-h) + p{margin-top:28px}
 
-/* Capability page */
-.back{display:inline-block;color:var(--dim);font-style:italic;padding:6px 0;margin-top:10px}
-.cap-page .opening{margin-top:16vh}
-.cap-page .title{font-size:clamp(2.2rem,10vw,3rem)}
+/* ---------- Capability ---------- */
 .goal{margin-top:24px;font-size:1.18rem;font-style:italic;color:var(--dim);line-height:1.6}
-.part{margin-top:14vh}
+.part{margin-top:12vh}
 .part-h{font-style:italic;color:var(--faint);font-size:1rem;margin-bottom:18px}
-.focus{font-size:1.3rem;line-height:1.5;color:var(--flame);font-weight:300}
+.focus{font-size:1.3rem;line-height:1.5;color:var(--parchment);font-weight:300}
+.endline{font-size:1.15rem;line-height:1.55;color:var(--parchment);font-weight:300}
 
-/* Rungs: no lines, no boxes; state is carried by light */
-.rungs{list-style:none;margin:0;padding:0}
+/* Steps: no lines, no boxes; state is carried by light */
 .rung + .rung{margin-top:34px}
-.rt{font-size:1.25rem;line-height:1.35;font-weight:300}
+.rt{font-size:1.2rem;line-height:1.35;font-weight:300;color:var(--dim)}
 .rt .num{font-style:italic;color:var(--faint);font-size:.95rem;margin-right:.7em}
-.rt .st{font-style:italic;font-size:.9rem;margin-left:.6em;color:var(--faint)}
+.rt .st{font-style:italic;font-size:.88rem;margin-left:.6em;color:var(--faint)}
 .rung.done .rt{color:var(--faint);text-decoration:line-through;text-decoration-color:rgba(124,111,100,.6);text-decoration-thickness:1px}
-.rung.live .rt{color:var(--flame)}
-.rung.live .rt .num{font-style:italic;color:var(--faint);font-size:.95rem;margin-right:.7em}
-.rt .st{color:var(--ember)}
-.rung.ongoing .rt{color:var(--parchment)}
-.rung.next .rt{color:var(--parchment)}
-.rung.later .rt{color:var(--dim)}
-.what{margin-top:10px;font-size:.98rem;color:var(--text)}
-.sofar,.dw{margin-top:10px;font-size:.93rem;color:var(--faint)}
-.sofar em,.dw em{color:var(--dim)}
+.rung.live .rt,.rung.live .rt .st{color:var(--flame)}
+.rung.next .rt,.rung.ongoing .rt{color:var(--parchment)}
 .rungs.full{margin-top:40px}
 .rungs.full .rung + .rung{margin-top:44px}
+.what{margin-top:10px;font-size:.98rem}
+.sofar,.dw{margin-top:10px;font-size:.93rem;color:var(--faint)}
+.sofar em,.dw em{color:var(--dim);margin-right:.3em}
 .rung.done .what,.rung.later .what{color:var(--dim)}
 .rung.done .what,.rung.done .dw,.rung.done .sofar{opacity:.7}
-.endline{font-size:1.15rem;line-height:1.55;color:var(--parchment);font-weight:300}
-.complete{margin-top:18px;font-size:.93rem;color:var(--faint)}
-.complete em{color:var(--dim)}
-.capnav{margin-top:18vh;display:flex;justify-content:space-between;gap:24px}
-.capnav a{flex:1;color:var(--text);line-height:1.4}
-.capnav a span{display:block;font-style:italic;color:var(--ember);font-size:.9rem;margin-bottom:4px}
-.capnav a.nx{text-align:right}
-.lines-note{font-style:italic;color:var(--faint);font-size:.95rem;margin:-6px 0 26px}
 
-/* The whole way */
-.mapcap{display:block;margin-top:12vh}
-.mapcap .cap-name{display:block;font-size:1.3rem;font-style:normal;font-weight:300;color:var(--parchment)}
-.mapcap .state{display:block;font-style:italic;color:var(--faint);font-size:.95rem;margin-top:2px}
-.mapcap .rungs{margin-top:22px}
-.mapcap .rung + .rung{margin-top:8px}
-.mapcap .rt{font-size:1.05rem}
+.capnav{margin-top:16vh;display:flex;justify-content:space-between;gap:24px}
+.capnav a{flex:1;color:var(--text);line-height:1.4;padding:6px 0}
+.capnav a span{display:block;font-style:italic;color:var(--faint);font-size:.9rem;margin-bottom:4px}
+.capnav a.nx{text-align:right}
+
+/* ---------- The whole way ---------- */
+.waycap{display:block;margin-top:11vh}
+.waycap .cap-name{display:block;font-size:1.3rem;font-style:normal;font-weight:300;color:var(--parchment)}
+.waycap .state{display:block;font-style:italic;color:var(--faint);font-size:.95rem;margin-top:2px}
+.waycap .rungs{margin-top:20px}
+.waycap .rung + .rung{margin-top:8px}
+.waycap .rt{font-size:1.05rem}
+.complete{margin-top:18px;font-size:.93rem;color:var(--faint)}
+.complete em{color:var(--dim);margin-right:.3em}
+
+/* ---------- The protocol ---------- */
+.split li{display:flex;gap:16px;color:var(--dim)}
+.split li + li{margin-top:8px}
+.split .dk{flex:none;width:2.4em;font-style:italic;color:var(--faint)}
+.split li.on{color:var(--flame)}
+.split li.on .dk{color:var(--ember)}
+.split + .do{margin-top:30px}
+.stack + .stack{margin-top:22px}
 
 .err{margin-top:30vh}
+
+/* Arriving on a view: a slow, quiet fade. Refreshing data in place doesn't replay it. */
 @media (prefers-reduced-motion:no-preference){
-  main{animation:kindle 1.1s ease-out both}
+  main.enter{animation:kindle .6s ease-out both}
   @keyframes kindle{from{opacity:0}to{opacity:1}}
-  .flame{animation:flicker 5s ease-in-out infinite}
-  @keyframes flicker{0%,100%{opacity:1}45%{opacity:.8}55%{opacity:.95}}
+  .flame{animation:flicker 6s ease-in-out infinite}
+  @keyframes flicker{0%,100%{opacity:1}45%{opacity:.78}55%{opacity:.94}}
 }

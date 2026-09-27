@@ -1,50 +1,101 @@
 "use strict";
 
+/* The Odyssey renders data.json. Four views, all reached by plain links:
+   #/            home: the day's prescription, what's live, what hasn't begun, recovery
+   #/way         the whole phase: every capability and every step
+   #/c/<id>      one capability in full
+   #/protocol    the full protocol: day, week, month, training, stack, recovery */
+
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const MO = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-const STATUS_LABEL = {done:"done", live:"live", ongoing:"ongoing", next:"next", later:"later"};
-const STATE_LABEL = {active:"In play", queued:"Up next", horizon:"On the horizon"};
+const WD = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const DAY_KEYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const STATE_LABEL = {active:"In play", queued:"Up next", horizon:"Further out"};
 const STALE_AFTER_DAYS = 10;
 
 let DATA = null;
 
+/* ---------- Dates ---------- */
 function parseDate(k){ const [y,m,d] = k.split("-").map(Number); return new Date(y, m-1, d); }
-function fmtDate(k){ const d = parseDate(k); return `${d.getDate()} ${MO[d.getMonth()]}`; }
+const fmtDate = d => `${d.getDate()} ${MO[d.getMonth()]}`;
 function daysSince(k){
   const t = new Date(); t.setHours(0,0,0,0);
   return Math.round((t - parseDate(k)) / 86400000);
 }
+const todayKey = () => DAY_KEYS[new Date().getDay()];
 
-const liveRungs = c => c.rungs.filter(r => r.status === "live");
-const nextRung = c => c.rungs.find(r => r.status === "next");
+/* ---------- Plan helpers ---------- */
 const isLines = c => c.kind === "lines";
-// Where you stand on the path, e.g. "step 1 of 4" or "3 of 5 lines live".
+const liveRungs = c => c.rungs.filter(r => r.status === "live");
+
 function position(c){
   const n = c.rungs.length;
   if (isLines(c)) return `${liveRungs(c).length} of ${n} lines live`;
   const i = c.rungs.findIndex(r => r.status === "live");
   return i >= 0 ? `step ${i + 1} of ${n}` : `${n} steps`;
 }
-// What finishing phase one means for this capability.
+
+// What finishing the phase means for this capability.
 function completeWhen(c){
   if (c.gate) return c.gate;
-  const n = c.rungs.length, last = c.rungs[n - 1];
-  return isLines(c) ? `Every line finished.` : `All ${n} steps finished, the last being ${last.title.charAt(0).toLowerCase() + last.title.slice(1)}.`;
+  if (isLines(c)) return "Every line finished.";
+  return `All ${c.rungs.length} steps finished, ending with ${c.rungs[c.rungs.length - 1].title}.`;
 }
-function pathLine(c){
-  return `<p class="path">${c.rungs.map(r => `<span class="${r.status}">${esc(r.title)}</span>`).join(`<span class="sep">${isLines(c) ? " · " : " → "}</span>`)}</p>`;
-}
-const byline = () => `<p class="byline"><span>${esc(DATA.owner)}</span><span>${fmtDate(DATA.updated)}</span></p>`;
-const back = `<a class="back" href="#/" onclick="if(history.length>1){history.back();return false}">← back</a>`;
 
-/* ---------- Now ---------- */
-function live(c){
+// The whole path on one line, lit where you are.
+const pathLine = c => `<p class="path">${c.rungs.map(r => `<span class="${r.status}">${esc(r.title)}</span>`)
+  .join(`<span class="sep">${isLines(c) ? " · " : " → "}</span>`)}</p>`;
+
+const rungTitle = (r, i) =>
+  `<p class="rt"><span class="num">${i + 1}</span>${esc(r.title)}<span class="st">${esc(r.status)}</span></p>`;
+
+/* ---------- Shared pieces ---------- */
+const byline = () => {
+  const now = new Date();
+  return `<p class="byline"><span>${esc(DATA.owner)}</span><span>${WD[now.getDay()]} ${fmtDate(now)}</span></p>`;
+};
+const home = `<a class="back" href="#/">← home</a>`;
+const more = (href, text) => `<a class="more" href="${href}">${text} →</a>`;
+
+/* ---------- The day (home and protocol share it) ---------- */
+function dayItem(item){
+  const it = typeof item === "string" ? {text: item} : item;
+  const training = DATA.protocol.training.split[todayKey()] || "rest";
+  const text = esc(it.text).replace("{training}", `<span class="today">${esc(training)}</span>`);
+  return `<li>${text}${it.note ? `<span class="note">${esc(it.note)}</span>` : ""}</li>`;
+}
+
+function theDay(){
+  const p = DATA.protocol;
+  const tonight = p.week.filter(w => w.day === todayKey());
+  const blocks = p.day.map(b => {
+    const items = b.do.map(dayItem);
+    if (b.when === "Evening") items.push(...tonight.map(w => `<li><span class="today">${esc(w.text)}</span></li>`));
+    return `<div class="when"><p class="when-h">${esc(b.when)}</p><ul class="do">${items.join("")}</ul></div>`;
+  }).join("");
+  return `${blocks}
+    <div class="when never"><p class="when-h">Never</p>
+      <p class="never-line">${esc(p.never)}</p>
+      ${p.never_how.map(h => `<p class="never-how">${esc(h)}</p>`).join("")}
+    </div>`;
+}
+
+function recovery(){
+  return `<section class="closing">
+    <span class="flame" aria-hidden="true"></span>
+    <p class="closing-h">When a day goes wrong</p>
+    ${DATA.protocol.recovery.map(r => `<p>${esc(r)}</p>`).join("")}
+  </section>`;
+}
+
+/* ---------- Home ---------- */
+function liveEntry(c){
   const lr = liveRungs(c);
   const finish = !isLines(c) && lr[0]?.done_when
-    ? `<p class="finish"><em>Finished when</em> — ${esc(lr[0].done_when)}</p>` : "";
+    ? `<p class="finish"><em>Finished when</em> ${esc(lr[0].done_when)}</p>` : "";
   return `<a class="cap" href="#/c/${esc(c.id)}">
-    <p class="cap-name">${esc(c.name)} <span class="pos">· ${position(c)}</span></p>
+    <p class="cap-name">${esc(c.name)}</p>
     <h3 class="cap-live">${lr.map(r => esc(r.title)).join(" · ") || "Nothing live yet"}</h3>
     <p class="nowtext">${esc(c.now)}</p>
     ${finish}
@@ -52,16 +103,11 @@ function live(c){
   </a>`;
 }
 
-const quiet = (c, sub) =>
-  `<a class="quiet" href="#/c/${esc(c.id)}"><span class="name">${esc(c.name)}</span><span class="sub">${sub}</span></a>`;
-
-function renderNow(){
+function renderHome(){
   const d = DATA.destination;
   const caps = DATA.capabilities;
   const active = caps.filter(c => c.state === "active");
-  const queued = caps.filter(c => c.state === "queued");
-  const horizon = caps.filter(c => c.state === "horizon");
-  const thens = active.map(c => ({c, r: nextRung(c)})).filter(x => x.r);
+  const waiting = caps.filter(c => c.state !== "active");
   const age = daysSince(DATA.updated);
 
   $("#view").innerHTML = `
@@ -70,50 +116,47 @@ function renderNow(){
       <p class="eyebrow">${esc(d.phase)}</p>
       <h1 class="title">${esc(d.title)}</h1>
       <p class="why">${esc(d.why)}</p>
-      ${age > STALE_AFTER_DAYS ? `<p class="stale">Last tended ${age} days ago.</p>` : ""}
-      <a class="explore" href="#/map">See the whole of ${esc(d.phase.toLowerCase())} →</a>
+      ${age > STALE_AFTER_DAYS ? `<p class="stale">The plan was last tended ${age} days ago.</p>` : ""}
     </header>
+
+    <section class="sec">
+      <h2 class="sec-h">Today</h2>
+      ${theDay()}
+      ${more("#/protocol", "The whole protocol")}
+    </section>
 
     <section class="sec">
       <h2 class="sec-h">What's live</h2>
-      ${active.map(live).join("")}
+      ${active.map(liveEntry).join("")}
     </section>
 
-    <section class="sec">
-      <h2 class="sec-h">After this</h2>
-      ${queued.map(c => quiet(c, `begins with <span class="rn">${esc((liveRungs(c)[0] || c.rungs[0]).title)}</span>`)).join("")}
-      ${thens.map(({c, r}) => quiet(c, `then <span class="rn">${esc(r.title)}</span>`)).join("")}
-      ${horizon.map(c => quiet(c, "further out")).join("")}
-    </section>
+    ${waiting.length ? `<section class="sec">
+      <h2 class="sec-h">Not yet begun</h2>
+      ${waiting.map(c => `<a class="quiet" href="#/c/${esc(c.id)}"><span class="name">${esc(c.name)}</span>
+        <span class="sub">${esc(STATE_LABEL[c.state] || c.state)}, beginning with <span class="rn">${esc(c.rungs[0].title)}</span></span></a>`).join("")}
+      ${more("#/way", `The whole of ${esc(d.phase.toLowerCase())}`)}
+    </section>` : ""}
 
-    <section class="closing">
-      <span class="flame" aria-hidden="true"></span>
-      ${DATA.rules.map(r => `<p>${esc(r)}</p>`).join("")}
-    </section>
-
-    <a class="onward" href="#/map">The whole way <span>→</span></a>`;
+    ${recovery()}`;
 }
 
 /* ---------- The whole way ---------- */
-function rungTitle(r, i){
-  return `<p class="rt"><span class="num">${i + 1}</span>${esc(r.title)}<span class="st">${STATUS_LABEL[r.status] || esc(r.status)}</span></p>`;
-}
-
-function renderMap(){
+function renderWay(){
   const d = DATA.destination;
   $("#view").innerHTML = `
     ${byline()}
-    ${back}
+    ${home}
     <header class="opening">
       <p class="eyebrow">${esc(d.phase)}, the whole way</p>
       <h1 class="title">${esc(d.title)}</h1>
-      <p class="why">Every capability, and every step on its path to the end of ${esc(d.phase.toLowerCase())}. Tap one to open it.</p>
+      ${DATA.reading.map(r => `<p class="why">${esc(r)}</p>`).join("")}
+      <p class="asof">The plan as of ${fmtDate(parseDate(DATA.updated))}.</p>
     </header>
-    ${DATA.capabilities.map(c => `<a class="mapcap" href="#/c/${esc(c.id)}">
+    ${DATA.capabilities.map(c => `<a class="waycap" href="#/c/${esc(c.id)}">
       <span class="cap-name">${esc(c.name)}</span>
       <span class="state">${esc(STATE_LABEL[c.state] || c.state)} · ${position(c)}</span>
       <ol class="rungs">${c.rungs.map((r, i) => `<li class="rung ${r.status}">${rungTitle(r, i)}</li>`).join("")}</ol>
-      ${completeWhen(c) ? `<p class="complete"><em>Complete when</em> — ${esc(completeWhen(c))}</p>` : ""}
+      <p class="complete"><em>Complete when</em> ${esc(completeWhen(c))}</p>
     </a>`).join("")}`;
 }
 
@@ -123,17 +166,17 @@ function renderCap(id){
   const k = caps.findIndex(x => x.id === id);
   if (k < 0){ location.replace("#/"); return; }
   const c = caps[k], prev = caps[k - 1], next = caps[k + 1];
-  // Every step is shown in full; how brightly it's lit says where attention belongs.
+  // Every step in full; how brightly it's lit says where attention belongs.
   const rung = (r, i) => `<li class="rung ${r.status}">
     ${rungTitle(r, i)}
     ${r.what ? `<p class="what">${esc(r.what)}</p>` : ""}
-    ${r.progress ? `<p class="sofar"><em>So far</em> — ${esc(r.progress)}</p>` : ""}
-    ${r.done_when ? `<p class="dw"><em>Finished when</em> — ${esc(r.done_when)}</p>` : ""}
+    ${r.progress ? `<p class="sofar"><em>So far</em> ${esc(r.progress)}</p>` : ""}
+    ${r.done_when ? `<p class="dw"><em>Finished when</em> ${esc(r.done_when)}</p>` : ""}
   </li>`;
 
-  $("#view").innerHTML = `<div class="cap-page">
+  $("#view").innerHTML = `
     ${byline()}
-    ${back}
+    ${home}
     <header class="opening">
       <p class="eyebrow">${esc(STATE_LABEL[c.state] || c.state)} · ${position(c)}</p>
       <h1 class="title">${esc(c.name)}</h1>
@@ -146,26 +189,70 @@ function renderCap(id){
       ${pathLine(c)}
       <ol class="rungs full">${c.rungs.map(rung).join("")}</ol>
     </section>
-    ${completeWhen(c) ? `<section class="part"><h2 class="part-h">${esc(DATA.destination.phase)} is complete when</h2><p class="endline">${esc(completeWhen(c))}</p></section>` : ""}
+    ${c.method ? `<section class="part"><h2 class="part-h">The method</h2><p>${esc(c.method)}</p></section>` : ""}
+    <section class="part"><h2 class="part-h">${esc(DATA.destination.phase)} is complete when</h2><p class="endline">${esc(completeWhen(c))}</p></section>
 
-    <nav class="capnav">
+    <nav class="capnav" aria-label="Other capabilities">
       ${prev ? `<a href="#/c/${esc(prev.id)}"><span>← previous</span>${esc(prev.name)}</a>` : "<span></span>"}
       ${next ? `<a class="nx" href="#/c/${esc(next.id)}"><span>next →</span>${esc(next.name)}</a>` : "<span></span>"}
-    </nav>
-  </div>`;
+    </nav>`;
+}
+
+/* ---------- The protocol ---------- */
+function renderProtocol(){
+  const p = DATA.protocol;
+  const today = todayKey();
+  const list = items => `<ul class="do">${items.map(i => `<li>${esc(typeof i === "string" ? i : i.text)}</li>`).join("")}</ul>`;
+  $("#view").innerHTML = `
+    ${byline()}
+    ${home}
+    <header class="opening">
+      <p class="eyebrow">The protocol</p>
+      <h1 class="title">How the days go</h1>
+      <p class="why">The behaviours everything else rests on. Kept by default, not by willpower.</p>
+    </header>
+
+    <section class="part"><h2 class="part-h">Every day</h2>${theDay()}</section>
+    <section class="part"><h2 class="part-h">Every week</h2>${list(p.week)}</section>
+    <section class="part"><h2 class="part-h">Every month</h2>${list(p.month)}</section>
+    <section class="part"><h2 class="part-h">Training</h2>
+      <ul class="split">${DAY_KEYS.slice(1).concat("Sun").map(k =>
+        `<li class="${k === today ? "on" : ""}"><span class="dk">${k}</span>${esc(p.training.split[k])}</li>`).join("")}</ul>
+      ${list(p.training.rules)}
+    </section>
+    <section class="part"><h2 class="part-h">The stack</h2>
+      ${p.stack.map(s => `<div class="stack"><p class="when-h">${esc(s.when)}</p><p>${esc(s.what)}</p></div>`).join("")}
+    </section>
+    ${recovery()}`;
 }
 
 /* ---------- Routing ---------- */
-function route(scroll = true){
+function arrive(){
+  const m = $("#view");
+  m.classList.remove("enter"); void m.offsetWidth; m.classList.add("enter");
+}
+
+const scrollMemory = {};
+let currentHash = null;
+
+function route(){
   if (!DATA) return;
   const h = location.hash.replace(/^#/, "") || "/";
   const m = h.match(/^\/c\/([\w-]+)/);
   if (m) renderCap(m[1]);
-  else if (h === "/map") renderMap();
-  else renderNow();
-  if (scroll) window.scrollTo(0, 0);
+  else if (h === "/way" || h === "/map") renderWay();
+  else if (h === "/protocol") renderProtocol();
+  else renderHome();
 }
-window.addEventListener("hashchange", () => route());
+
+// Remember where you were on each view, so coming back home doesn't lose your place.
+window.addEventListener("hashchange", () => {
+  if (currentHash !== null) scrollMemory[currentHash] = window.scrollY;
+  currentHash = location.hash || "#/";
+  route();
+  arrive();
+  window.scrollTo(0, scrollMemory[currentHash] || 0);
+});
 
 let lastText = "";
 async function load(){
@@ -174,10 +261,12 @@ async function load(){
     if (!res.ok) throw new Error(res.status);
     const text = await res.text();
     if (text === lastText) return;
-    const first = !lastText;
     DATA = JSON.parse(text);
     lastText = text;
-    route(first);
+    const first = currentHash === null;
+    if (first) currentHash = location.hash || "#/";
+    route();
+    if (first) arrive();
   } catch (e) {
     if (DATA) return;
     $("#view").innerHTML = `<div class="err"><p class="eyebrow">Odyssey</p><h1 class="title">The plan isn't here yet</h1><p class="why">Open the app once while you're online and it will be kept for offline use.</p></div>`;
@@ -185,8 +274,13 @@ async function load(){
 }
 load();
 
-/* Refresh when the app comes back to the foreground, so a plan update shows without relaunching. */
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && DATA) load(); });
+// Coming back to the app: pick up plan changes, and re-render so "today" is today.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible" || !DATA) return;
+  const y = window.scrollY;
+  lastText = "";
+  load().then(() => window.scrollTo(0, y));
+});
 
 if ("serviceWorker" in navigator){
   window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
