@@ -21,17 +21,11 @@ const MO = ["January","February","March","April","May","June","July","August","S
 const WD = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const DAY_KEYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const STATE_LABEL = {active:"In play", queued:"Up next", horizon:"Further out"};
-const STALE_AFTER_DAYS = 10;
 
 let DATA = null;
 
 /* ---------- Dates ---------- */
-function parseDate(k){ const [y,m,d] = k.split("-").map(Number); return new Date(y, m-1, d); }
 const fmtDate = d => `${d.getDate()} ${MO[d.getMonth()]}`;
-function daysSince(k){
-  const t = new Date(); t.setHours(0,0,0,0);
-  return Math.round((t - parseDate(k)) / 86400000);
-}
 const todayKey = () => DAY_KEYS[new Date().getDay()];
 
 /* ---------- Links ---------- */
@@ -130,7 +124,6 @@ function renderHome(){
   const caps = DATA.capabilities;
   const active = caps.filter(c => c.state === "active");
   const waiting = caps.filter(c => c.state !== "active");
-  const age = daysSince(DATA.updated);
 
   $("#view").innerHTML = `
     ${byline()}
@@ -140,7 +133,6 @@ function renderHome(){
         <h1 class="title">${esc(d.title)} ${go}</h1>
       </a>
       <p class="why">${esc(d.why)}</p>
-      ${age > STALE_AFTER_DAYS ? `<p class="stale">The plan was last tended ${age} days ago.</p>` : ""}
     </header>
 
     <section class="sec">
@@ -172,7 +164,6 @@ function renderWay(){
       <p class="eyebrow">${esc(d.phase)}, the whole way</p>
       <h1 class="title">${esc(d.title)}</h1>
       ${DATA.reading.map(r => `<p class="why">${esc(r)}</p>`).join("")}
-      <p class="asof">The plan as of ${fmtDate(parseDate(DATA.updated))}.</p>
       <nav class="index" aria-label="Parts of the phase"><a href="${to.way("throughout")}">Throughout</a><span class="sep"> · </span><a href="${to.way("capabilities")}">The capabilities</a><span class="sep"> · </span><a href="${to.way("works")}">Published work</a></nav>
     </header>
     ${throughout()}

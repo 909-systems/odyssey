@@ -62,7 +62,6 @@ a:active .go{transform:translateX(3px)}
 .title{font-size:clamp(2.6rem,12vw,3.5rem);line-height:1.06;letter-spacing:-.015em;margin-top:8px}
 .why{margin-top:26px;font-size:1.08rem;color:var(--dim);line-height:1.75}
 .why + .why{margin-top:14px}
-.stale,.asof{margin-top:26px;font-style:italic;color:var(--faint);font-size:.95rem}
 
 .sec{margin-top:20vh}
 .sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:36px}

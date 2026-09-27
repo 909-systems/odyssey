@@ -210,7 +210,7 @@
       "state": "active",
       "goal": "Solve any DSA problem correctly, optimally, and in good time.",
       "why": "Most hard problems are data-structure and algorithm problems underneath. Seeing the recurrence, the invariant and the cost quickly makes everything else faster to build and easier to trust.",
-      "now": "Erickson Ch 1 exercises and Kleinberg & Tardos Ch 5 to §5.5. The thirty recurrences and the five proofs.",
+      "now": "Erickson Ch 1 with Kleinberg & Tardos Ch 5, and the first of the thirty recurrences.",
       "continuous": [
         "Antti Laaksonen, Guide to Competitive Programming, as a companion reference"
       ],
@@ -227,8 +227,7 @@
             "Correctness and runtime proofs for binary search, mergesort, quickselect, BFS and Dijkstra",
             "CSES Introductory, all eighteen"
           ],
-          "done_when": "The recurrence and master-theorem case sketched on sight from a single editorial line, and the eighteen logged.",
-          "progress": "CSES Introductory is done."
+          "done_when": "The recurrence and master-theorem case sketched on sight from a single editorial line, and the eighteen logged."
         },
         {
           "title": "Containers, built from scratch",
@@ -281,7 +280,7 @@
       "state": "active",
       "goal": "Real mastery of C++ across its history: what C++98/03 was like, what each standard changed, and why.",
       "why": "The language everything else here is written in. Knowing exactly what each line does (copies, moves, lifetimes, what the compiler generates) is the difference between code that works and code you can reason about.",
-      "now": "Starts Wednesday 30 September: Meyers, Effective Modern C++, Items 1–4, then 18–22 on Friday.",
+      "now": "Meyers, Effective C++, Items 5–25: how value semantics and ownership worked before C++11.",
       "method": "Every rung is organised by topic, walked from old to new: the old-language problem, the idiom that worked around it, what the committee changed and in which standard, why, and what is still rough.",
       "continuous": [
         "The evolution log: one entry per feature met in rungs 1–3, with the old problem, the old idiom, what changed and when, the committee's reasoning, the proposal paper, and what is still rough. Finished when it covers every feature in rungs 1–3.",
@@ -349,7 +348,7 @@
       "kind": "lines",
       "goal": "Probability sharp enough to solve unfamiliar problems cold, and a pricer that proves you understand the numerics behind it.",
       "why": "Reasoning under uncertainty, and numerics you can trust. The pricer is where both are proven: every result checked against a known answer, with its error stated.",
-      "now": "Pricer: the validation harness. Probability: Blitzstein & Hwang Ch 1–2.",
+      "now": "The pricer's validation harness. Blitzstein & Hwang Ch 1. Goldberg on floating point. Strang on covariance and Cholesky.",
       "rungs": [
         {
           "title": "The pricer",
@@ -364,8 +363,7 @@
             "6 Desk layer: implied vol solver, curve bootstrapped from instruments, surface fitted to quotes",
             "Design commitments from the first line: core templated on scalar type; exactly one type-erased boundary, at the factory rim; the per-path loop fully static and inlined; a new product is one new file with zero core edits"
           ],
-          "done_when": "The three seams open, and two numbers exist: RMSE at fixed wall-clock time, and the cost of price plus all sensitivities over the cost of price alone, single digit and flat in the number of sensitivities.",
-          "progress": "Step 1 of 6: the validation harness."
+          "done_when": "The three seams open, and two numbers exist: RMSE at fixed wall-clock time, and the cost of price plus all sensitivities over the cost of price alone, single digit and flat in the number of sensitivities."
         },
         {
           "title": "Probability",
@@ -374,8 +372,7 @@
             "Blitzstein & Hwang, Introduction to Probability, Ch 1–4, with the Harvard Stat 110 lectures",
             "Then Ch 5–10, most of the book; Ch 9 takes the longest"
           ],
-          "done_when": "Bayes applied cold in an unfamiliar setup on paper, and any Mosteller problem solved cold.",
-          "progress": "Chapters 1–2 this fortnight."
+          "done_when": "Bayes applied cold in an unfamiliar setup on paper, and any Mosteller problem solved cold."
         },
         {
           "title": "Floating point",
@@ -385,12 +382,11 @@
             "Higham, Accuracy and Stability of Numerical Algorithms, Ch 1–2",
             "Kahan and pairwise summation against naive over ten million terms; -ffast-math sub-flag by sub-flag; FMA and reassociation"
           ],
-          "done_when": "The harness tolerance chosen and defended, and why a stable algorithm on an ill-conditioned problem still fails.",
-          "progress": "Goldberg is done."
+          "done_when": "The harness tolerance chosen and defended, and why a stable algorithm on an ill-conditioned problem still fails."
         },
         {
           "title": "Linear algebra",
-          "status": "later",
+          "status": "live",
           "items": [
             "Strang, Introduction to Linear Algebra: covariance and the Cholesky decomposition, with MIT 18.06"
           ],
@@ -415,7 +411,7 @@
       "state": "active",
       "goal": "Know why code is fast or slow, and prove it with your own measurements.",
       "why": "Speed is something you measure, not guess. A working model of the machine turns \"why is this slow?\" into a question with an answer.",
-      "now": "CSAPP Ch 2, deep on §2.4 floating point.",
+      "now": "CSAPP Ch 1, the tour of a system.",
       "gate": "Every measurement in rungs 1–4 done on both machines, from programs you wrote, with the difference between the machines explained for each.",
       "continuous": [
         "Muratori, Performance-Aware Programming: one section with its homework each week",
@@ -431,8 +427,7 @@
             "Algorithmica: the RAM-model and cache-hierarchy articles",
             "Bakhvalov, Performance Analysis and Tuning on Modern CPUs, Part 1 Ch 1–6: perf, flamegraphs, top-down analysis"
           ],
-          "done_when": "The pricer's per-path loop profiled on both machines (perf on the 9800X3D, Instruments on the M1 Max), and you can say where its time goes on each and why they differ.",
-          "progress": "CSAPP Ch 1 is done."
+          "done_when": "The pricer's per-path loop profiled on both machines (perf on the 9800X3D, Instruments on the M1 Max), and you can say where its time goes on each and why they differ."
         },
         {
           "title": "The instruction level",
@@ -478,7 +473,7 @@
       "state": "active",
       "goal": "Understand memory ordering well enough to write concurrent code without guessing.",
       "why": "Concurrent code that looks right is often wrong. Knowing what the memory model actually guarantees is the only way to write it without guessing.",
-      "now": "Not started. Williams, C++ Concurrency in Action, Ch 5 first.",
+      "now": "Williams, C++ Concurrency in Action, Ch 5.",
       "method": "This ladder is a genuine dependency chain.",
       "rungs": [
         {
@@ -540,7 +535,7 @@
       "state": "active",
       "goal": "Taste in software design: structuring for clarity and simplicity, and modelling a problem well.",
       "why": "Clear structure is what lets code keep changing. Small, timed builds train the instinct for where the boundaries go.",
-      "now": "Kernighan & Pike, and the next microapplication in your order.",
+      "now": "Kernighan & Pike, The Practice of Programming, and the first microapplication.",
       "method": "Microapplications, where design taste is actually built. Read the initial spec only, implement in 15–20 minutes, then extensions in 10–15, 15–20 and 20–25. No AI, and never a duplicate of a live project. The extensions are the point: each lands on a boundary you committed to before you knew it was coming, and which ones bend cheaply and which have to be torn out is the lesson.",
       "rungs": [
         {
@@ -584,7 +579,7 @@
       "kind": "lines",
       "goal": "Understand how a real low-latency system is built, end to end, well enough to design one yourself.",
       "why": "Where every other capability meets: how a real low-latency system is built end to end, from the wire to the decision.",
-      "now": "Not started. Three lines; only the Disruptor paper depends on another line.",
+      "now": "CSAPP Ch 9 with the malloc lab, Beej's Guide, and Harris, Trading and Exchanges.",
       "gate": "On a whiteboard: the path from wire to order book, every data structure choice and the alternative you rejected, and what you'd measure at each stage and roughly what the number should be.",
       "rungs": [
         {
