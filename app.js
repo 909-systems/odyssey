@@ -50,9 +50,14 @@ const list = items => `<ul class="items">${items.map(x => `<li>${esc(x)}</li>`).
 // A labelled line: the label in the margin, the direction beside it.
 const field = (label, body) => `<div class="field"><p class="label">${esc(label)}</p><div class="body">${body}</div></div>`;
 
+// "Starts after" names another capability's rung, and opens it.
+function afterLink(a){
+  const c = DATA.capabilities.find(x => x.id === a.id);
+  return c ? `<a href="${to.cap(c.id, a.rung)}">${esc(c.name)}, rung ${a.rung}: ${esc(c.rungs[a.rung - 1]?.title)}</a>` : "";
+}
 function rungFields(r){
   return FIELDS.filter(([k]) => r[k]).map(([k, label]) =>
-    field(label, Array.isArray(r[k]) ? list(r[k]) : `<p>${esc(r[k])}</p>`)).join("");
+    field(label, k === "after" ? `<p>${afterLink(r[k])}</p>` : list(r[k]))).join("");
 }
 const cadence = c => (c.cadence || []).map(x => field(x.label, x.items ? list(x.items) : `<p>${esc(x.text)}</p>`)).join("");
 
@@ -133,7 +138,7 @@ function renderHome(){
 
     ${DATA.later?.length ? `<section class="sec">
       ${secHead("Later", to.later(), "the outline")}
-      ${DATA.later.map(ph => `<a class="quiet" href="${to.later(ph.id)}"><span class="name">${esc(ph.name)} ${go}</span></a>`).join("")}
+      ${DATA.later.map(ph => `<a class="quiet" href="${to.later(ph.id)}">${esc(ph.name)} ${go}</a>`).join("")}
     </section>` : ""}
 
     ${recovery()}`;
@@ -154,7 +159,7 @@ function renderWay(){
       <a class="cap-name" href="${to.cap(c.id)}">${esc(c.name)} ${go}</a>
       <p class="state">${position(c)}</p>
       <ol class="rungs">${c.rungs.map((r, i) =>
-        `<li class="rung ${r.status}"><a class="rt" href="${to.cap(c.id, i + 1)}">${rungTitle(r, i)}${r.after ? `<span class="st">after ${esc(r.after)}</span>` : ""}</a></li>`).join("")}</ol>
+        `<li class="rung ${r.status}"><a class="rt" href="${to.cap(c.id, i + 1)}">${rungTitle(r, i)}${r.after ? `<span class="st">after ${esc(DATA.capabilities.find(x => x.id === r.after.id)?.name)} ${r.after.rung}</span>` : ""}</a></li>`).join("")}</ol>
     </section>`).join("")}
     ${DATA.later?.length ? `<a class="more" href="${to.later()}">${DATA.later.map(p => esc(p.name.split(" — ")[0])).join(" and ")} ${go}</a>` : ""}`;
 }

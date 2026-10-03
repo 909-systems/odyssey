@@ -47,7 +47,8 @@ for (const [i, c] of (data.capabilities ?? []).entries()) {
     const rat = `${at} rung ${j + 1}`;
     need(isText(r.title), `${rat}: title is missing`);
     need(STATUSES.includes(r.status), `${rat}: status must be one of ${STATUSES.join(", ")}`);
-    need(r.after === undefined || isText(r.after), `${rat}: after must be text`);
+    need(r.after === undefined || (data.capabilities.some(x => x.id === r.after.id && Number.isInteger(r.after.rung) && r.after.rung >= 1 && r.after.rung <= x.rungs.length)),
+      `${rat}: after must be {id, rung} naming another capability's rung`);
     for (const k of FIELDS) need(r[k] === undefined || isList(r[k]), `${rat}: ${k} must be a list of text`);
     need(FIELDS.some(k => r[k]), `${rat}: needs at least one of ${FIELDS.join(", ")}`);
   }

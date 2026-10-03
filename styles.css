@@ -42,7 +42,6 @@ main{
 h1,h2,h3{margin:0;font-weight:300;color:var(--parchment)}
 p{margin:0}
 a{color:inherit;text-decoration:none}
-em{font-style:italic}
 ul,ol{list-style:none;margin:0;padding:0}
 :focus-visible{outline:1px solid var(--dim);outline-offset:6px;border-radius:2px}
 
@@ -56,52 +55,57 @@ ul,ol{list-style:none;margin:0;padding:0}
 a:active .go{transform:translateX(3px)}
 .title .go{font-size:.42em;vertical-align:.5em}
 .door{display:block}
+.more{display:block;margin-top:12vh;font-style:italic;color:var(--dim);padding:6px 0}
 
 .opening{margin-top:18vh}
 .eyebrow{font-style:italic;color:var(--dim);font-size:1.02rem}
 .title{font-size:clamp(2.6rem,12vw,3.5rem);line-height:1.06;letter-spacing:-.015em;margin-top:8px}
 .why{margin-top:26px;font-size:1.08rem;color:var(--dim);line-height:1.75}
-.why + .why{margin-top:14px}
 
 .sec{margin-top:20vh}
 .sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:36px}
 .sec-h h2{font-style:italic;color:var(--faint);font-size:1rem;font-weight:350}
 .sec-h a{font-style:italic;color:var(--dim);font-size:.95rem;padding:8px 0;margin:-8px 0}
+.part{margin-top:12vh}
+.part-h{font-style:italic;color:var(--faint);font-size:1rem;margin-bottom:18px}
 
 /* ---------- The day ---------- */
 .when + .when{margin-top:34px}
 .when-h{font-style:italic;color:var(--faint);font-size:.92rem;margin-bottom:8px}
-.do li{color:var(--text)}
 .do li + li{margin-top:10px}
 .do .note{display:block;margin-top:4px;font-size:.92rem;font-style:italic;color:var(--faint)}
 .today{color:var(--flame)}
 .never-line{color:var(--parchment)}
 .never-how{margin-top:10px;font-style:italic;color:var(--dim);font-size:.98rem}
 
+/* ---------- Labelled lines: the label in the margin, the direction beside it ---------- */
+.fields{margin-top:14px}
+.field{display:grid;grid-template-columns:5.8rem minmax(0,1fr);gap:0 14px;align-items:baseline}
+.field + .field{margin-top:12px}
+.field .label{font-style:italic;color:var(--faint);font-size:.88rem;line-height:1.5}
+.field .body,.field .body > p{font-size:.97rem}
+.field .items li + li{margin-top:4px}
+.field a{border-bottom:1px solid rgba(124,111,100,.5)}
+
 /* ---------- What's live ---------- */
-.cap{display:block}
 .cap + .cap{margin-top:64px}
 .cap-name{display:inline-block;font-size:.95rem;color:var(--dim);font-style:italic;padding:4px 0;margin:-4px 0}
 .cap-live{margin-top:6px;font-size:1.65rem;line-height:1.25}
-.cap-live .sep{color:var(--faint)}
-.nowtext{margin-top:12px}
-.finish{margin-top:12px;font-size:.93rem;color:var(--faint);line-height:1.65}
-.finish em{color:var(--dim);margin-right:.3em}
+.cap-live .num{font-style:italic;color:var(--faint);font-size:1.1rem;margin-right:.55em}
+.cap .fields{margin-top:12px}
+.standing-home{margin-top:16px}
+.standing-home .label,.standing-home .body,.standing-home .items li{color:var(--faint)}
 
-/* The whole path in one line: lit where you are, dim where you're headed */
-.path{margin-top:16px;font-size:.9rem;line-height:1.7;color:var(--faint)}
+/* The whole ladder in one line: lit where you are, dim where you're headed */
+.path{margin-top:18px;font-size:.9rem;line-height:1.7;color:var(--faint)}
 .path .done{text-decoration:line-through;text-decoration-color:rgba(124,111,100,.6)}
 .path .live{color:var(--ember)}
-.path .next,.path .ongoing{color:var(--dim)}
+.path .next{color:var(--dim)}
 .path .sep{opacity:.6}
 .path a{padding:3px 0}
 
-/* ---------- Not yet begun ---------- */
 .quiet{display:block}
 .quiet + .quiet{margin-top:22px}
-.quiet .name{color:var(--text)}
-.quiet .sub{display:block;font-style:italic;color:var(--faint);font-size:.95rem}
-.quiet .sub .rn{font-style:normal;color:var(--dim)}
 
 /* ---------- Recovery, beneath the flame ---------- */
 .closing{margin-top:24vh;text-align:center}
@@ -110,59 +114,35 @@ a:active .go{transform:translateX(3px)}
 .closing p:not(.closing-h){font-style:italic;color:var(--dim);font-size:1.03rem;line-height:1.6;max-width:24rem;margin:0 auto}
 .closing p:not(.closing-h) + p{margin-top:28px}
 
-/* ---------- Capability ---------- */
-.goal{margin-top:24px;font-size:1.18rem;font-style:italic;color:var(--dim);line-height:1.6}
-.part{margin-top:12vh}
-.part-h{font-style:italic;color:var(--faint);font-size:1rem;margin-bottom:18px}
-.focus{font-size:1.3rem;line-height:1.5;color:var(--parchment);font-weight:300}
-.endline{font-size:1.15rem;line-height:1.55;color:var(--parchment);font-weight:300}
-
-/* Steps: no lines, no boxes; state is carried by light */
+/* ---------- Rungs: no lines, no boxes; state is carried by light ---------- */
 .rung + .rung{margin-top:34px}
 .rt{font-size:1.2rem;line-height:1.35;font-weight:300;color:var(--dim)}
 .rt .num{font-style:italic;color:var(--faint);font-size:.95rem;margin-right:.7em}
 .rt .st{font-style:italic;font-size:.88rem;margin-left:.6em;color:var(--faint)}
 .rung.done .rt{color:var(--faint);text-decoration:line-through;text-decoration-color:rgba(124,111,100,.6);text-decoration-thickness:1px}
 .rung.live .rt,.rung.live .rt .st{color:var(--flame)}
-.rung.next .rt,.rung.ongoing .rt{color:var(--parchment)}
+.rung.next .rt{color:var(--parchment)}
+.rung.next .field .body,.rung.later .field .body,.rung.done .field .body{color:var(--dim)}
 .rungs.full{margin-top:40px}
 .rungs.full .rung + .rung{margin-top:44px}
-.what{margin-top:10px;font-size:.98rem}
-.because{margin-top:6px;font-style:italic;color:var(--faint);font-size:.93rem}
-.items{margin-top:12px}
-.items li{position:relative;padding-left:1.1em;font-size:.97rem;color:var(--text)}
-.items li::before{content:"–";position:absolute;left:0;color:var(--faint)}
-.items li + li{margin-top:8px}
-.items .sub{margin-top:6px}
-.items .sub li{font-size:.94rem;color:var(--dim)}
-.items .sub li + li{margin-top:4px}
-.finish .items,.dw .items,.complete .items{margin-top:6px}
-.finish .items li,.dw .items li,.complete .items li{font-size:inherit;color:inherit}
-.part > .items:first-of-type{margin-top:0}
-.rung.done .items li,.rung.later .items li{color:var(--dim)}
-.group + .group{margin-top:34px}
-.part > p + .group{margin-top:30px}
-.items .note{display:block;margin-top:2px;font-size:.9rem;font-style:italic;color:var(--faint)}
-.wname{font-style:italic;color:var(--parchment);margin-right:.35em}
-.sofar,.dw{margin-top:10px;font-size:.93rem;color:var(--faint)}
-.sofar em,.dw em{color:var(--dim);margin-right:.3em}
-.rung.done .what,.rung.later .what{color:var(--dim)}
-.rung.done .what,.rung.done .dw,.rung.done .sofar{opacity:.7}
+.standing{margin-top:8vh}
 
 .capnav{margin-top:16vh;display:flex;justify-content:space-between;gap:24px}
 .capnav a{flex:1;color:var(--text);line-height:1.4;padding:6px 0}
 .capnav a span{display:block;font-style:italic;color:var(--faint);font-size:.9rem;margin-bottom:4px}
 .capnav a.nx{text-align:right}
 
-/* ---------- The whole way ---------- */
+/* ---------- The whole phase ---------- */
 .waycap{margin-top:11vh}
 .waycap .cap-name{font-size:1.3rem;font-style:normal;font-weight:300;color:var(--parchment)}
-.waycap .state{display:block;font-style:italic;color:var(--faint);font-size:.95rem;margin-top:2px}
+.waycap .state{font-style:italic;color:var(--faint);font-size:.95rem;margin-top:2px}
 .waycap .rungs{margin-top:20px}
 .waycap .rung + .rung{margin-top:2px}
 .waycap .rt{display:block;font-size:1.05rem;padding:4px 0}
-.complete{margin-top:18px;font-size:.93rem;color:var(--faint)}
-.complete em{color:var(--dim);margin-right:.3em}
+
+/* ---------- Later ---------- */
+.phase-h{font-size:1.35rem;line-height:1.3;margin-bottom:6px}
+.phase-note{font-style:italic;color:var(--faint);font-size:.95rem;margin-bottom:22px}
 
 /* ---------- The protocol ---------- */
 .index{margin-top:26px;font-style:italic;color:var(--dim);font-size:.98rem}
@@ -185,24 +165,3 @@ a:active .go{transform:translateX(3px)}
   .flame{animation:flicker 6s ease-in-out infinite}
   @keyframes flicker{0%,100%{opacity:1}45%{opacity:.78}55%{opacity:.94}}
 }
-
-/* ---------- Labelled lines: the label in the margin, the direction beside it ---------- */
-.fields{margin-top:14px}
-.field{display:grid;grid-template-columns:5.8rem minmax(0,1fr);gap:0 14px;align-items:baseline}
-.field + .field{margin-top:12px}
-.field .label{font-style:italic;color:var(--faint);font-size:.88rem;line-height:1.5}
-.field .body > p{font-size:.97rem}
-.field .items{margin-top:0}
-.field .items li{padding-left:0;font-size:.97rem}
-.field .items li::before{content:none}
-.field .items li + li{margin-top:4px}
-.rung.later .field .items li,.rung.next .field .items li,.rung.later .field .body > p{color:var(--dim)}
-.cap .fields{margin-top:12px}
-.cap .path{margin-top:18px}
-.standing{margin-top:8vh}
-.phase-h{font-size:1.35rem;line-height:1.3;margin-bottom:6px}
-.phase-note{font-style:italic;color:var(--faint);font-size:.95rem;margin-bottom:22px}
-.more{display:block;margin-top:12vh;font-style:italic;color:var(--dim);padding:6px 0}
-.cap-live .num{font-style:italic;color:var(--faint);font-size:1.1rem;margin-right:.55em}
-.standing-home{margin-top:16px}
-.standing-home .label,.standing-home .body > p,.standing-home .items li{color:var(--faint)}

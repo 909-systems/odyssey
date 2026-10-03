@@ -1,7 +1,7 @@
 {
   "name": "The Odyssey",
   "short_name": "Odyssey",
-  "description": "What's live, what's next, and why.",
+  "description": "What's live, and what's next.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

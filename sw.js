@@ -1,6 +1,6 @@
 // Offline support. The plan (data.json) is network-first so updates show as soon as
 // you're online; everything else is served from cache and refreshed in the background.
-const CACHE = "odyssey-v10";
+const CACHE = "odyssey-v11";
 const SHELL = [
   "./", "index.html", "styles.css", "app.js", "data.json", "manifest.webmanifest",
   "fonts/newsreader-latin.woff2", "fonts/newsreader-latin-italic.woff2", "icons/icon.svg", "icons/apple-touch-icon.png",

@@ -5,7 +5,7 @@
     "phase": "Phase 1",
     "title": "Ready",
     "why": "When the invitations come, you accept, because you genuinely feel you could pull it off.",
-    "order": "Work each capability's rungs in order. When capabilities compete for time: Algorithms, C++, the pricer, Performance, Concurrency, Probability, then Software design and Systems."
+    "order": "Work each capability's rungs in order. When capabilities compete for time, take them in the order below."
   },
   "protocol": {
     "day": [
@@ -19,7 +19,7 @@
       {
         "when": "Through the day",
         "do": [
-          "One focus block on a live step. When two compete, the higher one wins.",
+          "One focus block on a live rung. When two compete, the higher one wins.",
           "Train: {training}. Then ten minutes of mobility.",
           "Zetamac, two minutes, floor of 50.",
           "Two problems into the solve log.",
@@ -70,12 +70,15 @@
         "Sun": "Arms, wrists, forearms and grip, twice a month"
       },
       "rules": [
-        "Exercise five days a week.",
-        "Main lift 4 sets of 4 to 6 at RPE 7 to 8. Accessories 3 sets of 8 to 12 at RPE 8. Hit the top of the range on every set, then add weight next session.",
-        "Finishers: 8 to 10 minutes, after lifting. Carries and rower on upper days, bike or sled on lower days.",
+        "Five days a week.",
+        "Main lift: 4 sets of 4–6 at RPE 7–8.",
+        "Accessories: 3 sets of 8–12 at RPE 8.",
+        "Top of the range on every set, then add weight next session.",
+        "Finishers: 8–10 minutes after lifting. Rower or carries on upper days, bike or sled on lower days.",
         "Tibialis raises and the single-leg calf eccentric in every lower session.",
         "Ten minutes of mobility after every session: front rack, thoracic, ankles.",
-        "Wednesday VO2: 4 × 4 minutes at 180–190 bpm, 3 minutes easy between, 10 minutes warm-up, 5 minutes cool-down. Don't stack fatigue into it on Tuesday.",
+        "VO2: 10 minutes warm-up, 4 × 4 minutes at 180–190 bpm with 3 minutes easy between, 5 minutes cool-down.",
+        "Keep Tuesday light enough for Wednesday's VO2.",
         "Deload every sixth week: same sessions, 60% of the weight, full reps."
       ]
     },
@@ -102,9 +105,9 @@
       }
     ],
     "recovery": [
-      "A missed day costs one day. It costs the plan nothing. You return the next morning at the same wake time.",
+      "A missed day costs one day. Return the next morning, at the same wake time.",
       "No debt, no catch-up. Nothing carries between days.",
-      "No replanning. Setting what this week should prove is fine. Rebuilding the roadmap isn't."
+      "Set what the week should prove. Don't rebuild the roadmap."
     ]
   },
   "capabilities": [
@@ -114,7 +117,12 @@
       "cadence": [
         {
           "label": "Every day",
-          "text": "Two problems: the first from the current rung's set, the second from the NeetCode sections beside it. Until a rung's set opens, both come from NeetCode."
+          "items": [
+            "Two problems",
+            "The first from the current rung's set",
+            "The second from the NeetCode sections beside it",
+            "Until a rung's set opens, both from NeetCode"
+          ]
         },
         {
           "label": "Fortnightly, from rung 2",
@@ -154,7 +162,10 @@
         {
           "title": "Containers, from scratch",
           "status": "later",
-          "after": "C++ rung 1",
+          "after": {
+            "id": "cpp",
+            "rung": 1
+          },
           "study": [
             "At the hash map: the chapter of Celis's Robin Hood Hashing thesis that defines the scheme",
             "Then Abseil's Swiss Tables notes, and Kulukundis's CppCon 2017 talk"
@@ -242,8 +253,10 @@
           "study": [
             "Effective Modern C++: Items 5–13 and 15–16",
             "From the Josuttis guides: optional, variant, string_view, structured bindings",
-            "The spaceship operator; ranges and views",
-            "consteval and constinit; designated initialisers",
+            "The spaceship operator",
+            "Ranges and views",
+            "consteval and constinit",
+            "Designated initialisers",
             "Coroutines and modules, skimmed"
           ]
         },
@@ -280,7 +293,8 @@
           "title": "Validation harness",
           "status": "live",
           "study": [
-            "Hull, Options, Futures, and Other Derivatives: Wiener Processes and Itô's Lemma; The Black–Scholes–Merton Model",
+            "Hull, Options, Futures, and Other Derivatives: Wiener Processes and Itô's Lemma",
+            "Hull: The Black–Scholes–Merton Model",
             "Skim Hull's Properties of Stock Options and Binomial Trees",
             "Overton, Numerical Computing with IEEE Floating Point Arithmetic, 2nd ed: all but the hardware and language chapters"
           ],
@@ -421,7 +435,8 @@
           "build": [
             "A single-producer single-consumer queue: mutex-based first, then lock-free",
             "Bounded, no allocation after construction, wait-free on both sides",
-            "Head and tail on separate cache lines; clean under ThreadSanitizer",
+            "Head and tail on separate cache lines",
+            "Clean under ThreadSanitizer",
             "Benchmarked against each other with variance, and with the padding removed",
             "Every memory ordering justified"
           ]
@@ -477,7 +492,8 @@
           "label": "Microapplications",
           "items": [
             "A few a week, in your list's order",
-            "Read the initial spec only; implement in 15–20 minutes",
+            "Read the initial spec only",
+            "Implement in 15–20 minutes",
             "Then extensions in 10–15, 15–20 and 20–25 minutes",
             "No AI"
           ]
@@ -516,7 +532,7 @@
           "status": "live",
           "study": [
             "Operating Systems: Three Easy Pieces: Ch 13–20, virtual memory and allocation",
-            "OSTEP Ch 7–10, scheduling",
+            "Operating Systems: Three Easy Pieces: Ch 7–10, scheduling",
             "Bonwick, The Slab Allocator, and tcmalloc's design document"
           ],
           "build": [
@@ -543,7 +559,9 @@
           ],
           "build": [
             "A limit order book on the byo containers",
-            "Price-time priority; add, cancel and modify; constant-time cancel"
+            "Price-time priority",
+            "Add, cancel and modify",
+            "Constant-time cancel"
           ]
         }
       ],
@@ -559,10 +577,13 @@
         {
           "label": "Algorithms",
           "items": [
-            "The rest of the byo library, in dependency order: treap, skip list, pairing heap",
+            "The rest of the byo library, in dependency order:",
+            "Treap, skip list, pairing heap",
             "Sparse table, Fenwick tree, lazy and persistent segment trees",
-            "Heavy-light and centroid decomposition; modular arithmetic and FFT",
-            "Trie, suffix array, Aho–Corasick; flows",
+            "Heavy-light and centroid decomposition",
+            "Modular arithmetic and FFT",
+            "Trie, suffix array, Aho–Corasick",
+            "Flows",
             "Codeforces 1500–2100, with the constructive and interactive tags"
           ]
         },
@@ -581,7 +602,8 @@
             "Quasi-Monte Carlo: Sobol and Brownian bridge",
             "Reverse-mode AAD, from Savine, Modern Computational Finance",
             "The desk layer: implied vol solver, bootstrapped curve, fitted surface",
-            "QuantLib traced against the pricer; isbetray",
+            "QuantLib traced against the pricer",
+            "isbetray",
             "At scale: a thread pool and per-thread tapes, scaling efficiency, the roofline"
           ]
         },
@@ -590,7 +612,8 @@
           "items": [
             "Out-of-order execution in depth: Hennessy & Patterson, Computer Architecture, Ch 3",
             "Throughput predicted with llvm-mca and uiCA, then measured",
-            "The roofline; LTO and PGO",
+            "The roofline",
+            "LTO and PGO",
             "Overton's hardware and language chapters, and the cost of denormals"
           ]
         },
