@@ -185,3 +185,24 @@ a:active .go{transform:translateX(3px)}
   .flame{animation:flicker 6s ease-in-out infinite}
   @keyframes flicker{0%,100%{opacity:1}45%{opacity:.78}55%{opacity:.94}}
 }
+
+/* ---------- Labelled lines: the label in the margin, the direction beside it ---------- */
+.fields{margin-top:14px}
+.field{display:grid;grid-template-columns:5.8rem minmax(0,1fr);gap:0 14px;align-items:baseline}
+.field + .field{margin-top:12px}
+.field .label{font-style:italic;color:var(--faint);font-size:.88rem;line-height:1.5}
+.field .body > p{font-size:.97rem}
+.field .items{margin-top:0}
+.field .items li{padding-left:0;font-size:.97rem}
+.field .items li::before{content:none}
+.field .items li + li{margin-top:4px}
+.rung.later .field .items li,.rung.next .field .items li,.rung.later .field .body > p{color:var(--dim)}
+.cap .fields{margin-top:12px}
+.cap .path{margin-top:18px}
+.standing{margin-top:8vh}
+.phase-h{font-size:1.35rem;line-height:1.3;margin-bottom:6px}
+.phase-note{font-style:italic;color:var(--faint);font-size:.95rem;margin-bottom:22px}
+.more{display:block;margin-top:12vh;font-style:italic;color:var(--dim);padding:6px 0}
+.cap-live .num{font-style:italic;color:var(--faint);font-size:1.1rem;margin-right:.55em}
+.standing-home{margin-top:16px}
+.standing-home .label,.standing-home .body > p,.standing-home .items li{color:var(--faint)}

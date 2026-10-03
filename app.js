@@ -3,28 +3,28 @@
 /* The Odyssey renders data.json.
 
    Pages, and how they nest:
-     #/                  home: today, what's live, what hasn't begun
+     #/                  home: today, what's live, what comes later
        #/way             the whole phase ........ #/way/<id> lands on one capability
-         #/c/<id>        one capability ......... #/c/<id>/<n> lands on step n
+         #/c/<id>        one capability ......... #/c/<id>/<n> lands on rung n
+       #/later           phases 2 and 3 ......... #/later/<id> lands on one phase
        #/protocol        the protocol ........... #/protocol/<part> lands on a part
 
    How you move between them:
-   - A heading is the door to the thing it names: the phase title opens the whole
-     phase, a capability's name opens that capability, a step opens that step.
+   - A heading is the door to the thing it names.
    - Each home section says in its heading row where its full page is.
-   - "Up" goes one level up the nesting above, back to where you'd expect to be.
-   - The byline always goes home. */
+   - "Up" goes one level up the nesting above. The byline always goes home. */
 
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const MO = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const WD = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const DAY_KEYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const STATE_LABEL = {active:"In play", queued:"Up next", horizon:"Further out"};
+
+// The parts of a rung, in the order they're read.
+const FIELDS = [["after","Starts after"],["study","Study"],["practise","Practise"],["build","Build"],["daily","Daily"]];
 
 let DATA = null;
 
-/* ---------- Dates ---------- */
 const fmtDate = d => `${d.getDate()} ${MO[d.getMonth()]}`;
 const todayKey = () => DAY_KEYS[new Date().getDay()];
 
@@ -33,58 +33,37 @@ const to = {
   home: "#/",
   way: id => id ? `#/way/${id}` : "#/way",
   cap: (id, n) => n ? `#/c/${id}/${n}` : `#/c/${id}`,
+  later: id => id ? `#/later/${id}` : "#/later",
   protocol: part => part ? `#/protocol/${part}` : "#/protocol",
 };
 const go = `<span class="go" aria-hidden="true">→</span>`;
 const up = (href, label) => `<a class="up" href="${href}">← ${esc(label)}</a>`;
 const secHead = (title, href, label) =>
   `<div class="sec-h"><h2>${esc(title)}</h2>${href ? `<a href="${href}">${esc(label)} ${go}</a>` : ""}</div>`;
-
-/* ---------- Text ---------- */
-// Plan text is either a sentence or a list of bullets; a bullet can carry sub-bullets.
-function bullets(list, cls = "items"){
-  const li = x => typeof x === "string" ? `<li>${esc(x)}</li>`
-    : `<li>${esc(x.text)}${x.sub ? `<ul class="sub">${x.sub.map(li).join("")}</ul>` : ""}</li>`;
-  return `<ul class="${cls}">${list.map(li).join("")}</ul>`;
-}
-// A labelled block ("Finished when", "Complete when") that reads well as prose or bullets.
-const labelled = (cls, label, v) => Array.isArray(v)
-  ? `<div class="${cls}"><em>${label}</em>${bullets(v)}</div>`
-  : `<p class="${cls}"><em>${label}</em> ${esc(v)}</p>`;
-const prose = (v, cls = "") => Array.isArray(v) ? bullets(v) : `<p class="${cls}">${esc(v)}</p>`;
-
-/* ---------- Plan helpers ---------- */
-const isLines = c => c.kind === "lines";
-const liveRungs = c => c.rungs.filter(r => r.status === "live");
-const stepNo = (c, r) => c.rungs.indexOf(r) + 1;
-
-function position(c){
-  const n = c.rungs.length;
-  if (isLines(c)) return `${liveRungs(c).length} of ${n} lines live`;
-  const i = c.rungs.findIndex(r => r.status === "live");
-  return i >= 0 ? `step ${i + 1} of ${n}` : `${n} steps`;
-}
-
-// What finishing the phase means for this capability.
-function completeWhen(c){
-  if (c.gate) return c.gate;
-  if (isLines(c)) return "Every line finished.";
-  return `All ${c.rungs.length} steps finished, ending with ${c.rungs[c.rungs.length - 1].title}.`;
-}
-
-// The whole path on one line, lit where you are; every step is a door to itself.
-const pathLine = c => `<p class="path">${c.rungs.map((r, i) =>
-  `<a class="${r.status}" href="${to.cap(c.id, i + 1)}">${esc(r.title)}</a>`)
-  .join(`<span class="sep">${isLines(c) ? " · " : " → "}</span>`)}</p>`;
-
-const rungTitle = (r, i) =>
-  `<span class="num">${i + 1}</span>${esc(r.title)}<span class="st">${esc(r.status)}</span>`;
-
-/* ---------- Shared pieces ---------- */
 const byline = () => {
   const now = new Date();
   return `<p class="byline"><a href="${to.home}">${esc(DATA.owner)}</a><span>${WD[now.getDay()]} ${fmtDate(now)}</span></p>`;
 };
+
+/* ---------- Plan pieces ---------- */
+const list = items => `<ul class="items">${items.map(x => `<li>${esc(x)}</li>`).join("")}</ul>`;
+// A labelled line: the label in the margin, the direction beside it.
+const field = (label, body) => `<div class="field"><p class="label">${esc(label)}</p><div class="body">${body}</div></div>`;
+
+function rungFields(r){
+  return FIELDS.filter(([k]) => r[k]).map(([k, label]) =>
+    field(label, Array.isArray(r[k]) ? list(r[k]) : `<p>${esc(r[k])}</p>`)).join("");
+}
+const cadence = c => (c.cadence || []).map(x => field(x.label, x.items ? list(x.items) : `<p>${esc(x.text)}</p>`)).join("");
+
+const liveIndex = c => c.rungs.findIndex(r => r.status === "live");
+const position = c => { const i = liveIndex(c); return i >= 0 ? `rung ${i + 1} of ${c.rungs.length}` : `${c.rungs.length} rungs`; };
+
+// The whole ladder on one line, lit where you are; every rung is a door to itself.
+const pathLine = c => `<p class="path">${c.rungs.map((r, i) =>
+  `<a class="${r.status}" href="${to.cap(c.id, i + 1)}">${esc(r.title)}</a>`).join(`<span class="sep"> → </span>`)}</p>`;
+
+const rungTitle = (r, i) => `<span class="num">${i + 1}</span>${esc(r.title)}`;
 
 /* ---------- The day (home and protocol share it) ---------- */
 function dayItem(item){
@@ -105,7 +84,7 @@ function theDay(){
   return `${blocks}
     <div class="when never"><p class="when-h">Never</p>
       <p class="never-line">${esc(p.never)}</p>
-      ${p.never_how.map(h => `<p class="never-how">${esc(h)}</p>`).join("")}
+      ${(p.never_how || []).map(h => `<p class="never-how">${esc(h)}</p>`).join("")}
     </div>`;
 }
 
@@ -119,25 +98,19 @@ function recovery(){
 
 /* ---------- Home ---------- */
 function liveEntry(c){
-  const lr = liveRungs(c);
-  const finish = !isLines(c) && lr[0]?.done_when
-    ? labelled("finish", "Finished when", lr[0].done_when) : "";
-  const titles = lr.map(r => `<a href="${to.cap(c.id, stepNo(c, r))}">${esc(r.title)}</a>`).join(`<span class="sep"> · </span>`);
+  const i = liveIndex(c);
+  const r = c.rungs[i];
   return `<article class="cap">
     <a class="cap-name" href="${to.cap(c.id)}">${esc(c.name)} ${go}</a>
-    <h3 class="cap-live">${titles || "Nothing live yet"}</h3>
-    <p class="nowtext">${esc(c.now)}</p>
-    ${finish}
+    ${r ? `<h3 class="cap-live"><a href="${to.cap(c.id, i + 1)}">${rungTitle(r, i)}</a></h3>
+    <div class="fields">${rungFields(r)}</div>
+    ${c.cadence ? `<div class="fields standing-home">${cadence(c)}</div>` : ""}` : ""}
     ${pathLine(c)}
   </article>`;
 }
 
 function renderHome(){
   const d = DATA.destination;
-  const caps = DATA.capabilities;
-  const active = caps.filter(c => c.state === "active");
-  const waiting = caps.filter(c => c.state !== "active");
-
   $("#view").innerHTML = `
     ${byline()}
     <header class="opening">
@@ -155,13 +128,12 @@ function renderHome(){
 
     <section class="sec">
       ${secHead("What's live", to.way(), `all of ${d.phase.toLowerCase()}`)}
-      ${active.map(liveEntry).join("")}
+      ${DATA.capabilities.map(liveEntry).join("")}
     </section>
 
-    ${waiting.length ? `<section class="sec">
-      ${secHead("Not yet begun")}
-      ${waiting.map(c => `<a class="quiet" href="${to.cap(c.id)}"><span class="name">${esc(c.name)} ${go}</span>
-        <span class="sub">${esc(STATE_LABEL[c.state] || c.state)}, beginning with <span class="rn">${esc(c.rungs[0].title)}</span></span></a>`).join("")}
+    ${DATA.later?.length ? `<section class="sec">
+      ${secHead("Later", to.later(), "the outline")}
+      ${DATA.later.map(ph => `<a class="quiet" href="${to.later(ph.id)}"><span class="name">${esc(ph.name)} ${go}</span></a>`).join("")}
     </section>` : ""}
 
     ${recovery()}`;
@@ -176,39 +148,15 @@ function renderWay(){
     <header class="opening">
       <p class="eyebrow">${esc(d.phase)}, the whole way</p>
       <h1 class="title">${esc(d.title)}</h1>
-      ${DATA.reading.map(r => `<p class="why">${esc(r)}</p>`).join("")}
-      <nav class="index" aria-label="Parts of the phase"><a href="${to.way("throughout")}">Throughout</a><span class="sep"> · </span><a href="${to.way("capabilities")}">The capabilities</a><span class="sep"> · </span><a href="${to.way("works")}">Published work</a></nav>
+      <p class="why">${esc(d.order)}</p>
     </header>
-    ${throughout()}
-    <div id="cap-capabilities"></div>
     ${DATA.capabilities.map(c => `<section class="waycap" id="cap-${esc(c.id)}">
       <a class="cap-name" href="${to.cap(c.id)}">${esc(c.name)} ${go}</a>
-      <p class="state">${esc(STATE_LABEL[c.state] || c.state)} · ${position(c)}</p>
+      <p class="state">${position(c)}</p>
       <ol class="rungs">${c.rungs.map((r, i) =>
-        `<li class="rung ${r.status}"><a class="rt" href="${to.cap(c.id, i + 1)}">${rungTitle(r, i)}</a></li>`).join("")}</ol>
-      ${labelled("complete", "Complete when", completeWhen(c))}
+        `<li class="rung ${r.status}"><a class="rt" href="${to.cap(c.id, i + 1)}">${rungTitle(r, i)}${r.after ? `<span class="st">after ${esc(r.after)}</span>` : ""}</a></li>`).join("")}</ol>
     </section>`).join("")}
-    ${works()}`;
-}
-
-function throughout(){
-  const t = DATA.destination.throughout;
-  if (!t) return "";
-  return `<section class="part" id="cap-throughout"><h2 class="part-h">Throughout: conditions on all the work</h2>
-    ${t.map(g => `<div class="group"><p class="when-h">${esc(g.title)}${g.note ? ` · ${esc(g.note)}` : ""}</p>
-      ${bullets(g.items)}</div>`).join("")}
-  </section>`;
-}
-
-function works(){
-  const w = DATA.works;
-  if (!w) return "";
-  const piece = x => `<li><span class="wname">${esc(x.name)}</span> ${esc(x.what)}${x.rides ? `<span class="note">Rides ${esc(x.rides.charAt(0).toLowerCase() + x.rides.slice(1))}; ${esc(x.size)}.</span>` : ""}</li>`;
-  return `<section class="part" id="cap-works"><h2 class="part-h">Published work</h2>
-    <p>${esc(w.about)}</p>
-    <div class="group"><p class="when-h">Next, in order</p><ul class="items works">${w.queue.map(piece).join("")}</ul></div>
-    <div class="group"><p class="when-h">Shipped</p><ul class="items works">${w.shipped.map(piece).join("")}</ul></div>
-  </section>`;
+    ${DATA.later?.length ? `<a class="more" href="${to.later()}">${DATA.later.map(p => esc(p.name.split(" — ")[0])).join(" and ")} ${go}</a>` : ""}`;
 }
 
 /* ---------- Capability ---------- */
@@ -217,34 +165,24 @@ function renderCap(id){
   const k = caps.findIndex(x => x.id === id);
   if (k < 0){ location.replace(to.home); return; }
   const c = caps[k], prev = caps[k - 1], next = caps[k + 1];
-  // Every step in full; how brightly it's lit says where attention belongs.
+  // Every rung in full; how brightly it's lit says where attention belongs.
   const rung = (r, i) => `<li class="rung ${r.status}" id="step-${i + 1}">
-    <p class="rt">${rungTitle(r, i)}</p>
-    ${r.because ? `<p class="because">${esc(r.because)}</p>` : ""}
-    ${r.items ? bullets(r.items) : ""}
-    ${r.what ? `<p class="what">${esc(r.what)}</p>` : ""}
-    ${r.progress ? `<p class="sofar"><em>So far</em> ${esc(r.progress)}</p>` : ""}
-    ${r.done_when ? labelled("dw", "Finished when", r.done_when) : ""}
+    <p class="rt">${rungTitle(r, i)}${r.status === "live" ? `<span class="st">live</span>` : ""}</p>
+    <div class="fields">${rungFields(r)}</div>
   </li>`;
 
   $("#view").innerHTML = `
     ${byline()}
-    ${up(to.way(c.id), DATA.destination.title)}
+    ${up(to.way(c.id), DATA.destination.phase)}
     <header class="opening">
-      <p class="eyebrow">${c.code ? `${esc(c.code)} · ` : ""}${esc(STATE_LABEL[c.state] || c.state)} · ${position(c)}</p>
+      <p class="eyebrow">${position(c)}</p>
       <h1 class="title">${esc(c.name)}</h1>
-      <p class="goal">${esc(c.goal)}</p>
     </header>
-
-    <section class="part"><h2 class="part-h">Now</h2><p class="focus">${esc(c.now)}</p></section>
-    <section class="part"><h2 class="part-h">Why it matters</h2><p>${esc(c.why)}</p></section>
-    <section class="part"><h2 class="part-h">${isLines(c) ? "The lines, side by side" : "The path"}</h2>
+    ${c.cadence ? `<div class="fields standing">${cadence(c)}</div>` : ""}
+    <section class="part">
       ${pathLine(c)}
       <ol class="rungs full">${c.rungs.map(rung).join("")}</ol>
     </section>
-    ${c.method ? `<section class="part"><h2 class="part-h">The method</h2>${prose(c.method)}</section>` : ""}
-    ${c.continuous ? `<section class="part"><h2 class="part-h">Throughout</h2>${bullets(c.continuous)}</section>` : ""}
-    <section class="part"><h2 class="part-h">${esc(DATA.destination.phase)} is complete when</h2>${prose(completeWhen(c), "endline")}</section>
 
     <nav class="capnav" aria-label="Other capabilities">
       ${prev ? `<a href="${to.cap(prev.id)}"><span>← previous</span>${esc(prev.name)}</a>` : "<span></span>"}
@@ -252,32 +190,44 @@ function renderCap(id){
     </nav>`;
 }
 
-/* ---------- The protocol ---------- */
-const PROTOCOL_PARTS = [["day","Day"],["week","Week"],["month","Month"],["training","Training"],["stack","Stack"]];
+/* ---------- Later phases ---------- */
+function renderLater(){
+  $("#view").innerHTML = `
+    ${byline()}
+    ${up(to.home, "home")}
+    <header class="opening">
+      <p class="eyebrow">After ${esc(DATA.destination.phase.toLowerCase())}</p>
+      <h1 class="title">Later</h1>
+    </header>
+    ${DATA.later.map(ph => `<section class="part" id="later-${esc(ph.id)}">
+      <h2 class="phase-h">${esc(ph.name)}</h2>
+      ${ph.note ? `<p class="phase-note">${esc(ph.note)}</p>` : ""}
+      <div class="fields">${ph.parts.map(x => field(x.label, list(x.items))).join("")}</div>
+    </section>`).join("")}`;
+}
 
+/* ---------- The protocol ---------- */
 function renderProtocol(){
   const p = DATA.protocol;
   const today = todayKey();
-  const list = items => `<ul class="do">${items.map(i => `<li>${esc(typeof i === "string" ? i : i.text)}</li>`).join("")}</ul>`;
+  const plain = items => `<ul class="do">${items.map(i => `<li>${esc(typeof i === "string" ? i : i.text)}</li>`).join("")}</ul>`;
   const part = (key, title, body) => `<section class="part" id="p-${key}"><h2 class="part-h">${title}</h2>${body}</section>`;
+  const parts = [["day", "Every day", theDay()], ["week", "Every week", plain(p.week)]];
+  if (p.month?.length) parts.push(["month", "Every month", plain(p.month)]);
+  parts.push(["training", "Training", `
+      <ul class="split">${DAY_KEYS.slice(1).concat("Sun").map(k =>
+        `<li class="${k === today ? "on" : ""}"><span class="dk">${k}</span>${esc(p.training.split[k])}</li>`).join("")}</ul>
+      ${plain(p.training.rules)}`]);
+  if (p.stack?.length) parts.push(["stack", "The stack", p.stack.map(s => `<div class="stack"><p class="when-h">${esc(s.when)}</p><p>${esc(s.what)}</p></div>`).join("")]);
   $("#view").innerHTML = `
     ${byline()}
     ${up(to.home, "home")}
     <header class="opening">
       <p class="eyebrow">The protocol</p>
       <h1 class="title">How the days go</h1>
-      <p class="why">The behaviours everything else rests on. Kept by default, not by willpower.</p>
-      <nav class="index" aria-label="Parts of the protocol">${PROTOCOL_PARTS.map(([k, t]) => `<a href="${to.protocol(k)}">${t}</a>`).join(`<span class="sep"> · </span>`)}</nav>
+      <nav class="index" aria-label="Parts of the protocol">${parts.map(([k, t]) => `<a href="${to.protocol(k)}">${t.replace(/^Every /, "").replace(/^The /, "").replace(/^./, s => s.toUpperCase())}</a>`).join(`<span class="sep"> · </span>`)}</nav>
     </header>
-
-    ${part("day", "Every day", theDay())}
-    ${part("week", "Every week", list(p.week))}
-    ${part("month", "Every month", list(p.month))}
-    ${part("training", "Training", `
-      <ul class="split">${DAY_KEYS.slice(1).concat("Sun").map(k =>
-        `<li class="${k === today ? "on" : ""}"><span class="dk">${k}</span>${esc(p.training.split[k])}</li>`).join("")}</ul>
-      ${list(p.training.rules)}`)}
-    ${part("stack", "The stack", p.stack.map(s => `<div class="stack"><p class="when-h">${esc(s.when)}</p><p>${esc(s.what)}</p></div>`).join(""))}
+    ${parts.map(([k, t, b]) => part(k, t, b)).join("")}
     ${recovery()}`;
 }
 
@@ -287,6 +237,7 @@ function locate(){
   const [kind, a, b] = (location.hash.replace(/^#\/?/, "")).split("/");
   if (kind === "c" && a)                   return {page: `c/${a}`, render: () => renderCap(a), anchor: b && `step-${b}`};
   if (kind === "way" || kind === "map")    return {page: "way", render: renderWay, anchor: a && `cap-${a}`};
+  if (kind === "later" && DATA.later)      return {page: "later", render: renderLater, anchor: a && `later-${a}`};
   if (kind === "protocol")                 return {page: "protocol", render: renderProtocol, anchor: a && `p-${a}`};
   return {page: "home", render: renderHome};
 }

@@ -8,13 +8,12 @@ the app only renders it. Most requests here are plan updates, not code changes.
 - Change `data.json` only, and set `updated` to today's date.
 - Moving on from a rung: set it to `done`, the next one to `live`, the one after that to `next`.
   Ladders must read done → live → next → later, with at most one `live`.
-- `now` on a capability is the concrete thing being worked on this week; one or two sentences.
-- `progress` on a rung is an optional "so far" line.
+- Rungs carry only direction: `study`, `practise`, `build`, `daily`, and `after`. No commentary,
+  reasons or "done when" lines.
 - Capability `state` is `active` (in play), `queued` (up next) or `horizon`. Array order is priority order.
 - The protocol lives under `protocol`; see the README for its shape. `{training}` in a day item is
   filled from `protocol.training.split` for the current weekday.
-- No binding dates anywhere in the plan: only what's live and what's upcoming. `now` says what
-  to work on, never when.
+- No binding dates anywhere in the plan: only what's live and what's upcoming.
 - Keep the voice of the existing text: plain, specific, British spelling. No names, and no
   mention of interviews or employers: this page is public.
 - Run `node scripts/check-data.mjs` before committing.

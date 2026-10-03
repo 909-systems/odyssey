@@ -15,35 +15,24 @@ offline; when you're online it picks up plan changes the next time you open it.
 
 Everything lives in [`data.json`](data.json):
 
-- **destination**: the phase you're in and why.
-- **reading**: how to read the plan (the live step, priority order).
-- **protocol**: the daily prescription and everything under it.
-  - `day`: blocks by time of day, each a list of things to do. `{training}` is replaced with
-    today's session from the split, and an item can carry a quiet `note`.
-  - `never`, `never_how`: the don'ts, and how they're kept.
-  - `week` (an item with `"day": "Sun"` also shows that evening), `month`.
-  - `training.split` (Mon to Sun) and `training.rules`, `stack`, `recovery`.
-- **capabilities**, in priority order, each with a `state`:
-  - `active`: in play now
-  - `queued`: up next, not started
-  - `horizon`: further out
-- Each capability has **rungs** (steps), and each has a `status`: `done`, `live`, `next`,
-  `later`, or `ongoing`. The live step is the lowest one whose `done_when` isn't met.
-  A capability with `"kind": "lines"` has parallel tracks instead of a ladder, so more
-  than one can be live. `gate` (optional) says what finishing the phase means for it;
-  `method` (optional) describes how the work is done, `continuous` (optional) lists what runs
-  alongside every rung, and `code` is the capability's number in the phase document (C1–C7).
-  A rung can carry `because` (why it sits where it does) and `items` (its readings and tasks).
-- **destination.throughout**: conditions on all the work (build setup, measurement, practice).
-- **works**: published work, shipped and queued.
+- **destination**: the phase (`phase`, `title`), one line of direction (`why`), and the
+  priority order in words (`order`).
+- **protocol**: the daily prescription. `day` blocks by time of day (`{training}` is filled
+  from today's split), `never`, `week` (an item with `"day": "Sun"` also shows that evening),
+  `training.split` and `training.rules`, and `recovery`.
+- **capabilities**, in priority order. Each has an optional `cadence` (standing rhythm, as
+  `{label, text}` or `{label, items}`) and its **rungs**, in order.
+- A rung has a `title`, a `status` (`done`, `live`, `next`, `later`), and its parts as lists:
+  `study`, `practise`, `build`, `daily`. `after` names what it waits on.
+- **later**: the outline of the phases after this one, as `{id, name, note?, parts}`.
 
 ## The views
 
-- **Home**: today's prescription, what's live (with each capability's whole path on one
-  line), what hasn't begun, and what to do when a day goes wrong.
-- **The whole way** (`#/way`): every capability and every step in the phase.
-- **A capability** (`#/c/<id>`): now, why, every step in full, and what completes it.
-- **The protocol** (`#/protocol`): the day, the week, the month, training, the stack.
+- **Home**: today, each capability's live rung, and what comes later.
+- **The whole phase** (`#/way`): every capability and every rung.
+- **A capability** (`#/c/<id>`): its rhythm and every rung in full.
+- **Later** (`#/later`): the phases after this one.
+- **The protocol** (`#/protocol`): the day, the week and training.
 
 Moving around: a heading opens the thing it names (the phase title opens the whole phase,
 a capability's name opens it, any step opens that step). Each home section says in its
